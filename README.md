@@ -12,7 +12,19 @@
 
 ## Overview
 
-The **Fair Hiring Network (FHN)** is a next-generation hiring platform that leverages **Zynd AI** and **Google Gemini** to create a decentralized, transparent, and bias-free recruitment ecosystem. By utilizing a constellation of specialized AI agents, FHN verifies technical skills, audits for bias, and matches candidates based on verified evidence rather than just resumes.
+The **Fair Hiring Network (FHN)** is a next-generation hiring platform that leverages **Zynd AI** and **Google Gemini** to create a transparent and evidence-based hiring system that verifies skills and reduces bias in candidate evaluation. By utilizing a constellation of specialized AI agents, FHN verifies technical skills, audits for bias, and matches candidates based on verified evidence rather than just resumes.
+
+---
+
+## Core Idea
+
+Traditional hiring asks:
+“What does your resume say?”
+
+Fair Hiring Network asks:
+“What have you actually built?”
+
+FHN replaces resume-based hiring with a system that verifies real work, monitors bias in decision-making, and creates portable proof of skill through cryptographic credentials.
 
 ---
 
@@ -20,14 +32,17 @@ The **Fair Hiring Network (FHN)** is a next-generation hiring platform that leve
 
 - **Bias Detection** - AI-powered analysis of job descriptions to eliminate gender, college, and demographic biases
 - **Skill Verification** - Multi-source verification through GitHub, LeetCode, Codeforces, and LinkedIn
+  - *Note: The system uses publicly available development signals (e.g., public repositories, contribution history). Private repositories are not accessed to ensure security and compliance.*
 - **Resume Fraud Detection** - ATS-style checks for authenticity verification
 - **Evidence-Based Matching** - Match candidates to jobs using verified evidence, not just resumes
-- **Cryptographic Credentials** -  skill passports with cryptographic signatures
-- **AI Interviews** - Real-time video interviews with AI evaluation powered by Google Gemini
+- **Cryptographic Credentials** - skill passports with cryptographic signatures
+- **AI Interview Practice (Protocall)** - Real-time interview simulation for candidate preparation using Google Gemini
 
 ---
 
 ## System Architecture
+
+![Architecture](./fair-hiring-frontend/public/architecture.png)
 
 ### High-Level Architecture (ASCII)
 
@@ -66,7 +81,7 @@ The **Fair Hiring Network (FHN)** is a next-generation hiring platform that leve
 │  │    (Port 5100)    │      │                       │      │   (Port 5432)     │     │
 │  ├─────────────────┤      ├───────────────────────┤      ├──────────────────┤     │
 │  │ Agent Discovery  │      │ • Google Gemini 2.0   │      │ • companies      │     │
-│  │ Capability Map   │      │ • ElevenLabs TTS     │      │ • candidates     │     │
+│  │ Capability Map   │      │ • LLM + Multimodal    │      │ • candidates     │     │
 │  │ Sync Webhooks    │      │ • Ollama (Local LLM)  │      │ • jobs           │     │
 │  └────────┬────────┘      │ • Auth0 (Auth)        │      │ • applications   │     │
 │           │               └───────────────────────┘      │ • credentials    │     │
@@ -125,6 +140,16 @@ flowchart TB
     P9 -->|Score| D4
 ```
 
+## Why This Architecture Matters
+
+Unlike traditional systems that rely on resumes or tests, FHN uses a multi-stage verification pipeline:
+
+- **Multiple independent agents** validate different aspects of skill
+- **Bias is monitored** during the pipeline, not after
+- **Final decisions** are based on evidence, not claims
+
+This ensures higher trust and fairness in hiring outcomes.
+
 ### Data Flow Table
 
 | Stage | Agent | Input | Output | Verification | Documentation |
@@ -143,6 +168,8 @@ flowchart TB
 ---
 
 ## The 9 Zynd Agents
+
+Each agent performs a specialized verification task, creating a multi-layered evidence pipeline for candidate evaluation.
 
 | # | Agent | DID | Port | Purpose |
 |---|-------|-----|------|---------|
@@ -206,7 +233,7 @@ flowchart TB
 - **Node.js 18+**
 - **PostgreSQL** (configured in `.env`)
 - **Ollama** (optional, for local LLM)
-- **API Keys**: Auth0, ElevenLabs, Google Gemini
+- **API Keys**: Auth0, Google Gemini
 
 ### Launch Backend & Agents
 
@@ -268,7 +295,7 @@ HEUREKA_ACEHACK/
 │   ├── github_service.py
 │   ├── linkedin_service.py
 │   ├── leetcode_service.py
-│   ├── codeforce_service.py
+│   ├── codeforces_service.py
 │   └── start_all.py             # Launch all agents
 │
 ├── agents_files/
@@ -346,6 +373,29 @@ Full API documentation is available at:
 | `/api/pipeline/run` | POST | Run hiring pipeline |
 | `/api/pipeline/status/*` | GET | Pipeline status |
 | `/api/passport/*` | GET | Skill passport |
+
+## Limitations
+
+- **Signal Incompleteness**: Public repositories are one of several signals and may not represent all developers (e.g., those who work on proprietary code).
+- **Probabilistic Nature**: Skill verification is probabilistic based on available evidence, not an absolute measure of competence.
+- **Human-in-the-Loop**: AI systems assist decision-making but do not replace final human judgment in the hiring process.
+
+## Use Cases
+
+- **Startup Hiring**: Fast, automated screening of developers with high accuracy and low overhead.
+- **Campus Hiring**: Creation of verified student profiles based on real project work and coding performance.
+- **Developer Portfolios**: Proof of real work for freelance or job-seeking developers through portable credentials.
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/fhn
+AUTH0_DOMAIN=your-auth0-domain
+AUTH0_CLIENT_ID=your-client-id
+GOOGLE_API_KEY=your-gemini-api-key
+```
 
 ---
 
