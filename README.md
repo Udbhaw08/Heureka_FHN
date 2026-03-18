@@ -22,9 +22,8 @@ The **Fair Hiring Network (FHN)** is a next-generation hiring platform that leve
 - **Skill Verification** - Multi-source verification through GitHub, LeetCode, Codeforces, and LinkedIn
 - **Resume Fraud Detection** - ATS-style checks for authenticity verification
 - **Evidence-Based Matching** - Match candidates to jobs using verified evidence, not just resumes
-- **Cryptographic Credentials** - Blockchain-backed skill passports with cryptographic signatures
+- **Cryptographic Credentials** -  skill passports with cryptographic signatures
 - **AI Interviews** - Real-time video interviews with AI evaluation powered by Google Gemini
-- **Audio Insights** - Post-interview audio summaries via ElevenLabs TTS
 
 ---
 
@@ -194,7 +193,6 @@ flowchart TB
 | Service | Purpose |
 |---------|---------|
 | Google Gemini 2.0 Flash | LLM for code/resume analysis |
-| ElevenLabs TTS | Audio summary generation |
 | Ollama | Local LLM for verification |
 | Auth0 | Identity management |
 
