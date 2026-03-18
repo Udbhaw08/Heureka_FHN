@@ -1,0 +1,69 @@
+{
+  "source": "linkedin_pdf",
+  "parse_method": "llm",
+  "identity": {
+    "name": "Udbhaw Anand",
+    "headline": "AI Engineer | Machine Learning \u00b7 Computer Vision | PX4 \u00b7 YOLO \u00b7 Autonomous Systems | Hackathon Winner(x3) | Defense-Tech Projects",
+    "location": "Delhi, India"
+  },
+  "profile_signals": {
+    "headline_present": true,
+    "summary_present": true,
+    "location_present": true,
+    "profile_complete": false
+  },
+  "experience_signals": {
+    "total_roles_listed": 1,
+    "role_types": [
+      "applied_engineering"
+    ],
+    "tenure_consistency": "early-career",
+    "gaps_detected": false
+  },
+  "skills_signals": {
+    "skills_listed": [
+      "Gazebo",
+      "Python",
+      "OpenCV",
+      "YOLOv8",
+      "PX4",
+      "MAVSDK",
+      "React.js",
+      "Tailwind CSS"
+    ],
+    "endorsement_count": {}
+  },
+  "activity_signals": {
+    "posts_present": false,
+    "technical_posts_detected": false,
+    "recent_activity_days": null
+  },
+  "credibility_flags": {
+    "profile_complete": false,
+    "suspicious_patterns": true,
+    "buzzword_heavy": false,
+    "resume_consistent": false
+  },
+  "confidence_score": 0.4,
+  "experience": {
+    "total_years": 0.2,
+    "consistency": "early-career",
+    "timeline": [
+      {
+        "company": "Archanion Engineering",
+        "role": "Computer Vision & UAV Autonomy Engineer",
+        "start": "2025-11",
+        "end": "present",
+        "employment_type": "Unknown",
+        "source": "linkedin_pdf"
+      }
+    ]
+  },
+  "education": [
+    {
+      "school": "ABESIT",
+      "degree": null,
+      "year": "2027"
+    }
+  ]
+}

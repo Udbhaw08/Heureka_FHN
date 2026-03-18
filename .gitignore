@@ -1,0 +1,123 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+
+# Node / Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vite/
+dist/
+dist-ssr/
+build/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Logs & temp
+logs/
+*.log
+tmp/
+*.tmp
+
+# GSD specific ignores
+.gsd/phases/*/RESEARCH.md
+!.gsd/phases/*/PLAN.md
+
+# Project-specific professional exclusions
+.agent-*/
+agents_files/
+agents_services/
+_zyndai_agent_shim_disabled/
+credentials/
+data/
+backend/data/resumes/
+backend/data/linkedin/
+backend/data/linkedins/
+
+# Intermediary scripts and logs
+test_*.py
+debug_*.py
+verify_*.py
+inspect_*.py
+configure_*.py
+create_*.py
+cleanup_*.py
+clear_*.py
+kill_*.py
+trigger_*.py
+jd_bias.py
+agent.py
+check_credential.py
+
+# Internal / Sensitive Documentation
+previous_chat.md
+demo_script.md
+AUDIT_FIXES_APPLIED.md
+COMPLETE_DEBUG_REPORT.md
+JD_AGENT_CONFIG_UPDATE.md
+JD_BIAS_INTEGRATION.md
+PROJECT_PRD.md
+QUICK_REFERENCE.md
+RUN_DEMO.md
+SYSTEM_ANALYSIS_AND_GUIDE.md
+zynd_technical_report.md
+
+# Scripts
+start_*.ps1
+run_*.ps1
+restart_*.ps1
+*.sh
+
+# Output files
+results.txt
+*.log
+final_results.txt
+test_results*.txt
+backend_log.txt

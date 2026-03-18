@@ -1,0 +1,479 @@
+{
+  "username": "Udbhaw08",
+  "analyzed_at": "2026-02-04T08:09:14.857506",
+  "profile": {
+    "username": "Udbhaw08",
+    "name": "Udbhaw Anand",
+    "bio": "Computer Vision & UAV Autonomy Engineer \ud83d\ude81 | Building autonomous systems with YOLO, PX4 & MAVSDK | \ud83c\udfc6Hackathons Winner | AI & Robotics Enthusiast.",
+    "company": "Archanion Engineering",
+    "location": "Delhi, India",
+    "email": "udbhawinsta@gmail.com",
+    "blog": "",
+    "account_created": "2024-09-22T07:11:35Z",
+    "account_age_years": 1.4,
+    "account_age_days": 499,
+    "public_repos": 9,
+    "public_gists": 0,
+    "followers": 0,
+    "following": 0,
+    "days_since_update": 10,
+    "is_hireable": null,
+    "has_bio": true,
+    "has_company": true,
+    "has_blog": false,
+    "avatar_url": "https://avatars.githubusercontent.com/u/182399577?v=4",
+    "profile_url": "https://github.com/Udbhaw08"
+  },
+  "credibility_signal": {
+    "score": 65,
+    "flags": [],
+    "account_age_years": 1.4,
+    "is_verified": true
+  },
+  "skill_signal": {
+    "primary_language": "JavaScript",
+    "verified_languages": [
+      "JavaScript",
+      "Python",
+      "TypeScript"
+    ],
+    "language_distribution": {
+      "JavaScript": 52.8,
+      "Python": 23.2,
+      "TypeScript": 13.1,
+      "CSS": 6.2,
+      "HTML": 4.4,
+      "Shell": 0.3
+    },
+    "original_repos": 7,
+    "avg_code_depth": 46.0,
+    "best_repositories": [
+      {
+        "repo_name": "WebDev",
+        "url": "https://github.com/Udbhaw08/WebDev",
+        "language": "JavaScript",
+        "description": "Starting The Web Development Learning Journey  ",
+        "best_repo_score": 73.5,
+        "category": "Primary Evidence",
+        "why_selected": [
+          "Single-author project with full ownership",
+          "Solo-built project",
+          "Multi-module architecture",
+          "Consistent development over time",
+          "Has project documentation"
+        ],
+        "disclaimers": [],
+        "signals": {
+          "ownership": 100,
+          "ownership_breakdown": {
+            "authorship": 35,
+            "commit_dominance": 35,
+            "originality": 30
+          },
+          "engineering_depth": 45,
+          "documentation": 50,
+          "maturity": "iterative",
+          "maturity_score": 100
+        },
+        "details": {
+          "size_kb": 14436,
+          "stars": 0,
+          "contributor_count": 1,
+          "is_primary_contributor": true,
+          "has_tests": false,
+          "has_ci_cd": false,
+          "commit_analysis": {
+            "total_commits": 62,
+            "author_commits": 62,
+            "commit_ratio": 1.0,
+            "days_span": 156,
+            "unique_commit_days": 19,
+            "first_commit": "2025-07-17T00:33:43+00:00",
+            "last_commit": "2025-12-20T11:44:47+00:00",
+            "is_iterative": true
+          }
+        }
+      },
+      {
+        "repo_name": "Kavach",
+        "url": "https://github.com/Udbhaw08/Kavach",
+        "language": "Python",
+        "description": null,
+        "best_repo_score": 72.5,
+        "category": "Primary Evidence",
+        "why_selected": [
+          "Single-author project with full ownership",
+          "Solo-built project",
+          "Multi-module architecture",
+          "Consistent development over time",
+          "Has project documentation"
+        ],
+        "disclaimers": [],
+        "signals": {
+          "ownership": 100,
+          "ownership_breakdown": {
+            "authorship": 35,
+            "commit_dominance": 35,
+            "originality": 30
+          },
+          "engineering_depth": 45,
+          "documentation": 55,
+          "maturity": "iterative",
+          "maturity_score": 90
+        },
+        "details": {
+          "size_kb": 2310,
+          "stars": 0,
+          "contributor_count": 1,
+          "is_primary_contributor": true,
+          "has_tests": false,
+          "has_ci_cd": false,
+          "commit_analysis": {
+            "total_commits": 33,
+            "author_commits": 33,
+            "commit_ratio": 1.0,
+            "days_span": 45,
+            "unique_commit_days": 16,
+            "first_commit": "2025-12-09T07:29:46+00:00",
+            "last_commit": "2026-01-23T22:23:15+00:00",
+            "is_iterative": true
+          }
+        }
+      },
+      {
+        "repo_name": "Heureka-OpticShield",
+        "url": "https://github.com/Udbhaw08/Heureka-OpticShield",
+        "language": "CSS",
+        "description": null,
+        "best_repo_score": 62.0,
+        "category": "Primary Evidence",
+        "why_selected": [
+          "Primary contributor with strong ownership",
+          "Organized folder structure",
+          "Solo-built project",
+          "Well-documented with clear intent"
+        ],
+        "disclaimers": [
+          "High structural clarity, limited lifecycle evidence"
+        ],
+        "signals": {
+          "ownership": 70,
+          "ownership_breakdown": {
+            "authorship": 35,
+            "commit_dominance": 20,
+            "originality": 15
+          },
+          "engineering_depth": 70,
+          "documentation": 80,
+          "maturity": "one-shot",
+          "maturity_score": 20
+        },
+        "details": {
+          "size_kb": 50,
+          "stars": 0,
+          "contributor_count": 1,
+          "is_primary_contributor": true,
+          "has_tests": false,
+          "has_ci_cd": false,
+          "commit_analysis": {
+            "total_commits": 5,
+            "author_commits": 3,
+            "commit_ratio": 0.6,
+            "days_span": 0,
+            "unique_commit_days": 1,
+            "first_commit": "2026-01-16T09:21:04+00:00",
+            "last_commit": "2026-01-16T22:19:50+00:00",
+            "is_iterative": false
+          }
+        }
+      },
+      {
+        "repo_name": "testing",
+        "url": "https://github.com/Udbhaw08/testing",
+        "language": "JavaScript",
+        "description": null,
+        "best_repo_score": 53.5,
+        "category": "Supporting Evidence",
+        "why_selected": [
+          "Single-author project with full ownership",
+          "Organized folder structure",
+          "Solo-built project",
+          "Multi-module architecture"
+        ],
+        "disclaimers": [
+          "Single-session build, may be hackathon or experiment"
+        ],
+        "signals": {
+          "ownership": 100,
+          "ownership_breakdown": {
+            "authorship": 35,
+            "commit_dominance": 35,
+            "originality": 30
+          },
+          "engineering_depth": 45,
+          "documentation": 20,
+          "maturity": "one-shot",
+          "maturity_score": 30
+        },
+        "details": {
+          "size_kb": 47390,
+          "stars": 0,
+          "contributor_count": 1,
+          "is_primary_contributor": true,
+          "has_tests": false,
+          "has_ci_cd": false,
+          "commit_analysis": {
+            "total_commits": 9,
+            "author_commits": 9,
+            "commit_ratio": 1.0,
+            "days_span": 0,
+            "unique_commit_days": 1,
+            "first_commit": "2026-01-27T22:04:37+00:00",
+            "last_commit": "2026-01-27T22:41:04+00:00",
+            "is_iterative": false
+          }
+        }
+      },
+      {
+        "repo_name": "RescueTech",
+        "url": "https://github.com/Udbhaw08/RescueTech",
+        "language": "JavaScript",
+        "description": null,
+        "best_repo_score": 42.6,
+        "category": "Supporting Evidence",
+        "why_selected": [
+          "Meaningful contribution to project",
+          "Has project documentation"
+        ],
+        "disclaimers": [
+          "Single-session build, may be hackathon or experiment"
+        ],
+        "signals": {
+          "ownership": 57,
+          "ownership_breakdown": {
+            "authorship": 15,
+            "commit_dominance": 12,
+            "originality": 30
+          },
+          "engineering_depth": 25,
+          "documentation": 50,
+          "maturity": "one-shot",
+          "maturity_score": 40
+        },
+        "details": {
+          "size_kb": 502,
+          "stars": 0,
+          "contributor_count": 2,
+          "is_primary_contributor": false,
+          "has_tests": false,
+          "has_ci_cd": false,
+          "commit_analysis": {
+            "total_commits": 2,
+            "author_commits": 1,
+            "commit_ratio": 0.5,
+            "days_span": 231,
+            "unique_commit_days": 2,
+            "first_commit": "2025-05-03T07:20:32+00:00",
+            "last_commit": "2025-12-20T11:43:55+00:00",
+            "is_iterative": false
+          }
+        }
+      }
+    ]
+  },
+  "consistency_signal": {
+    "score": 30,
+    "commits_last_30_days": 25,
+    "commits_last_year": 118,
+    "active_weeks_ratio": 0.23,
+    "max_gap_days": 114,
+    "patterns": [
+      "long_inactivity_gaps"
+    ],
+    "days_since_last_commit": 7
+  },
+  "summary": {
+    "credibility_verified": true,
+    "primary_skill": "JavaScript",
+    "is_consistent": false,
+    "is_active": true,
+    "red_flags": [
+      "long_inactivity_gaps"
+    ]
+  },
+  "raw": {
+    "repos": [
+      {
+        "name": "testing",
+        "url": "https://github.com/Udbhaw08/testing",
+        "description": null,
+        "language": "JavaScript",
+        "is_fork": false,
+        "created_at": "2026-01-27T22:05:28Z",
+        "updated_at": "2026-01-27T22:41:09Z",
+        "pushed_at": "2026-01-27T22:50:02Z",
+        "stars": 0,
+        "forks": 0,
+        "size": 47390,
+        "has_issues": true,
+        "has_wiki": true,
+        "topics": [],
+        "default_branch": "main"
+      },
+      {
+        "name": "Kavach",
+        "url": "https://github.com/Udbhaw08/Kavach",
+        "description": null,
+        "language": "Python",
+        "is_fork": false,
+        "created_at": "2025-12-09T08:05:55Z",
+        "updated_at": "2026-01-23T22:23:23Z",
+        "pushed_at": "2026-01-23T22:23:19Z",
+        "stars": 0,
+        "forks": 0,
+        "size": 2310,
+        "has_issues": true,
+        "has_wiki": true,
+        "topics": [],
+        "default_branch": "main"
+      },
+      {
+        "name": "Udbhaw08",
+        "url": "https://github.com/Udbhaw08/Udbhaw08",
+        "description": null,
+        "language": null,
+        "is_fork": false,
+        "created_at": "2025-12-20T11:23:12Z",
+        "updated_at": "2026-01-22T13:24:56Z",
+        "pushed_at": "2026-01-22T13:24:52Z",
+        "stars": 0,
+        "forks": 0,
+        "size": 105,
+        "has_issues": true,
+        "has_wiki": true,
+        "topics": [],
+        "default_branch": "main"
+      },
+      {
+        "name": "Heureka-OpticShield",
+        "url": "https://github.com/Udbhaw08/Heureka-OpticShield",
+        "description": null,
+        "language": "CSS",
+        "is_fork": false,
+        "created_at": "2026-01-16T09:21:03Z",
+        "updated_at": "2026-01-16T22:20:07Z",
+        "pushed_at": "2026-01-16T22:20:03Z",
+        "stars": 0,
+        "forks": 0,
+        "size": 50,
+        "has_issues": true,
+        "has_wiki": true,
+        "topics": [],
+        "default_branch": "main"
+      },
+      {
+        "name": "WebDev",
+        "url": "https://github.com/Udbhaw08/WebDev",
+        "description": "Starting The Web Development Learning Journey  ",
+        "language": "JavaScript",
+        "is_fork": false,
+        "created_at": "2025-07-17T00:33:42Z",
+        "updated_at": "2025-12-20T11:44:51Z",
+        "pushed_at": "2025-12-20T11:44:47Z",
+        "stars": 0,
+        "forks": 0,
+        "size": 14436,
+        "has_issues": true,
+        "has_wiki": true,
+        "topics": [],
+        "default_branch": "main"
+      },
+      {
+        "name": "RescueTech",
+        "url": "https://github.com/Udbhaw08/RescueTech",
+        "description": null,
+        "language": "JavaScript",
+        "is_fork": false,
+        "created_at": "2025-05-03T07:00:06Z",
+        "updated_at": "2025-12-20T11:43:58Z",
+        "pushed_at": "2025-12-20T11:43:55Z",
+        "stars": 0,
+        "forks": 0,
+        "size": 502,
+        "has_issues": true,
+        "has_wiki": true,
+        "topics": [],
+        "default_branch": "main"
+      },
+      {
+        "name": "AI_Transportion",
+        "url": "https://github.com/Udbhaw08/AI_Transportion",
+        "description": null,
+        "language": "TypeScript",
+        "is_fork": false,
+        "created_at": "2025-05-08T18:06:44Z",
+        "updated_at": "2025-12-20T11:42:00Z",
+        "pushed_at": "2025-12-20T11:41:57Z",
+        "stars": 0,
+        "forks": 0,
+        "size": 263,
+        "has_issues": true,
+        "has_wiki": true,
+        "topics": [],
+        "default_branch": "main"
+      },
+      {
+        "name": "tree-detection-framework",
+        "url": "https://github.com/Udbhaw08/tree-detection-framework",
+        "description": null,
+        "language": null,
+        "is_fork": true,
+        "created_at": "2025-09-17T13:28:09Z",
+        "updated_at": "2025-09-17T13:28:09Z",
+        "pushed_at": "2025-09-08T16:10:15Z",
+        "stars": 0,
+        "forks": 0,
+        "size": 102190,
+        "has_issues": false,
+        "has_wiki": false,
+        "topics": [],
+        "default_branch": "main"
+      },
+      {
+        "name": "DeepForest-pytorch",
+        "url": "https://github.com/Udbhaw08/DeepForest-pytorch",
+        "description": "Pytorch implementation of the deepforest model for tree crown RGB detection.",
+        "language": null,
+        "is_fork": true,
+        "created_at": "2025-09-17T09:27:43Z",
+        "updated_at": "2025-09-17T09:27:43Z",
+        "pushed_at": "2021-06-06T20:12:10Z",
+        "stars": 0,
+        "forks": 0,
+        "size": 167026,
+        "has_issues": false,
+        "has_wiki": true,
+        "topics": [],
+        "default_branch": "master"
+      }
+    ],
+    "commit_activity": {
+      "total_commits_analyzed": 118,
+      "commits_last_30_days": 25,
+      "commits_last_90_days": 57,
+      "commits_last_year": 118,
+      "max_gap_days": 114,
+      "avg_gap_days": 2.0,
+      "weekend_commits_pct": 28.8,
+      "weekday_commits_pct": 71.2,
+      "active_weeks_ratio": 0.23,
+      "weeks_with_commits": 12,
+      "patterns": [
+        "long_inactivity_gaps"
+      ],
+      "first_commit": "2025-05-08T18:06:44+00:00",
+      "last_commit": "2026-01-27T22:41:04+00:00",
+      "days_since_last_commit": 7
+    }
+  }
+}

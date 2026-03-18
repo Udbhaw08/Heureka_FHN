@@ -1,0 +1,25 @@
+{
+    "evaluation_id": "debug_udbhaw08",
+    "agent": "skill_verification",
+    "version": "2026.1",
+    "output": {
+        "credential_id": "cred_ed400d59",
+        "evaluation_id": "debug_udbhaw08",
+        "verified_skills": {
+            "core": [],
+            "frameworks": [],
+            "infrastructure": [],
+            "tools": []
+        },
+        "skill_confidence": 66,
+        "confidence_explanation": "Moderate confidence. Portfolio presence confirmed but deep code evidence is partial. Targeted testing recommended.",
+        "signal_strength": "weak",
+        "credential_status": "PENDING_TEST",
+        "test_required": true,
+        "next_stage": "conditional_test",
+        "evidence_summary": {
+            "signal_count": 1,
+            "conflict_flags": []
+        }
+    }
+}

@@ -1,0 +1,38 @@
+{
+  "source": "linkedin_pdf",
+  "parse_method": "llm",
+  "identity": {
+    "name": "Udbhaw Anand",
+    "headline": "AI Engineer | Machine Learning \u00b7 Computer Vision | PX4 \u00b7 YOLO \u00b7 Autonomous Systems | Hackathon Winner(x3) | Defense-Tech Projects",
+    "location": "Delhi, India"
+  },
+  "experience": {
+    "total_years": 0.2,
+    "consistency": "stable",
+    "timeline": [
+      {
+        "company": "Archanion Engineering",
+        "role": "Computer Vision & UAV Autonomy Engineer (YOLO \u00b7 PX4 \u00b7 MAVSDK)",
+        "start": "2025-11",
+        "end": "present",
+        "employment_type": null,
+        "source": "linkedin_pdf"
+      }
+    ]
+  },
+  "skills": {
+    "claimed": [
+      "Gazebo",
+      "Python",
+      "OpenCV"
+    ]
+  },
+  "education": [
+    {
+      "school": "ABESIT",
+      "degree": null,
+      "field": null,
+      "year": "2027"
+    }
+  ]
+}

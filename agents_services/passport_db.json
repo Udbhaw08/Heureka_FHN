@@ -1,0 +1,423 @@
+{
+  "8": {
+    "credential_id": 8,
+    "record": {
+      "hash": "a2a77f20a915b637600496ca325e292fcb70a48209f2f26fbda297769bb1f9d1",
+      "signature": "0xc90773dc1be540ef241f7038648bc762c8de1d516634205ad39b7c005640984d8fb37b5928ce62f7d8e23752fff71beac6b750016ce730af8d205845f2f9de0f",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 8,
+      "anon_id": "ANON-09CDD490CCD3",
+      "issued_at": "2026-02-02T03:54:26.435256",
+      "expires_at": "2027-02-02T03:54:26.435256",
+      "match_score": 0,
+      "verified_skills": [],
+      "confidence": 0,
+      "signal_strength": "weak",
+      "evidence": {
+        "ats_verified": false,
+        "github_verified": false,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": false
+      }
+    }
+  },
+  "9": {
+    "credential_id": 9,
+    "record": {
+      "hash": "1ab676165dbf90f2f6d4844136d189ed64e88cf5f10a2b77da8427bdd87a2b8e",
+      "signature": "0xfbbaa82be0a3d37b3dc23383fa024795cef6f8e375cd79df32b1197f2b0ef95c4dc2f5e65e8564d1958bcf24ecb0c663b73d6fe6f4dd3729b42694edbd7ba500",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 9,
+      "anon_id": "ANON-09CDD490CCD3",
+      "issued_at": "2026-02-02T04:10:30.089910",
+      "expires_at": "2027-02-02T04:10:30.089910",
+      "match_score": 0,
+      "verified_skills": [],
+      "confidence": 0,
+      "signal_strength": "weak",
+      "evidence": {
+        "ats_verified": false,
+        "github_verified": false,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": false
+      }
+    }
+  },
+  "10": {
+    "credential_id": 10,
+    "record": {
+      "hash": "d5f03db62d6a790b8ed7fa3c11599b018ab6f1696b7a3b1f2a2b0ef425cb033d",
+      "signature": "0x3158b4d3cb63f4de754ec7658a3f7e0e41bf5987fc052a2be153e01b8a9e2ad3465807911909c5be1570487795c74f0176852b7c17538aed804851d805c0fb0a",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 10,
+      "anon_id": "ANON-6CB1C034FF97",
+      "issued_at": "2026-02-03T03:25:22.491629",
+      "expires_at": "2027-02-03T03:25:22.491629",
+      "match_score": 0,
+      "verified_skills": {
+        "core": [
+          "JavaScript",
+          "Python",
+          "TypeScript",
+          "CSS"
+        ],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 0,
+      "signal_strength": "none",
+      "evidence": {
+        "ats_verified": false,
+        "github_verified": false,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": false
+      }
+    }
+  },
+  "11": {
+    "credential_id": 11,
+    "record": {
+      "hash": "ea85d8ee8f1518a4550a6cfe9942c7ee186a61a91cae4ae564edecd27ad8a95f",
+      "signature": "0xb6dddf8471e5fe23cde31a690d3ab40cb0c6181ee59c795a4b900f98702b3be2975fe034afe792b7f7cf5988fc2cba879c67c188d50b70e00c61ed33696f500d",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 11,
+      "anon_id": "ANON-6CB1C034FF97",
+      "issued_at": "2026-02-03T04:03:34.185232",
+      "expires_at": "2027-02-03T04:03:34.185232",
+      "match_score": 0,
+      "verified_skills": {
+        "core": [
+          "JavaScript",
+          "Python",
+          "TypeScript",
+          "CSS"
+        ],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 0,
+      "signal_strength": "none",
+      "evidence": {
+        "ats_verified": true,
+        "github_verified": true,
+        "leetcode_verified": true,
+        "codeforces_verified": true,
+        "linkedin_verified": false,
+        "bias_checked": true
+      }
+    }
+  },
+  "12": {
+    "credential_id": 12,
+    "record": {
+      "hash": "bfcd4374ef978bd8f7239f425ddc4cb5716f64a48f73aeffd5cbc97e9ee40b26",
+      "signature": "0xb563812a54d9a0bdc38a1e5feac9a3663277eb8e06a6072e8b14ca43878c161de448dbd4cf3f08fff4fb3cbbbc8c095c2dc9496e251a87b0339c4f65aa72e004",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 12,
+      "anon_id": "ANON-FBF01AE360BE",
+      "issued_at": "2026-02-03T04:51:40.515509",
+      "expires_at": "2027-02-03T04:51:40.515509",
+      "match_score": 0,
+      "verified_skills": {
+        "core": [
+          "JavaScript",
+          "Python",
+          "TypeScript",
+          "CSS"
+        ],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 0,
+      "signal_strength": "none",
+      "evidence": {
+        "ats_verified": true,
+        "github_verified": true,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": true
+      }
+    }
+  },
+  "15": {
+    "credential_id": 15,
+    "record": {
+      "hash": "8a23cfd537179133af883ccf546b00b7b4a25979ba08848d14a64599312aa0e3",
+      "signature": "0x546017ba930dd17608799cd76a6cebaf4bdd8d7f81470a0dd7c0cfcf59967d0a3c2112ad5a26128248ab4f7a37dea89b79f8a3b54c4e0f8042713dea6f75e104",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 15,
+      "anon_id": "ANON-524975FC499F",
+      "issued_at": "2026-02-04T03:30:36.597137",
+      "expires_at": "2027-02-04T03:30:36.597137",
+      "match_score": 0,
+      "verified_skills": {
+        "core": [],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 0,
+      "signal_strength": "none",
+      "evidence": {
+        "ats_verified": true,
+        "github_verified": false,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": true
+      }
+    }
+  },
+  "18": {
+    "credential_id": 18,
+    "record": {
+      "hash": "201d972ec863a35aa6c4aad189ba82ba283ba986d48ca08f2d042d9520155bac",
+      "signature": "0xaba99cddfa2fa10af2b814507cebf998838422c865b73684f59bf0bc0c25fd06c57e41ed0a7365bb87940c541e929a4c8e6f006b81f6cb065b9deb8cc00d9504",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 18,
+      "anon_id": "VV45VkrXBUvZwkUY",
+      "issued_at": "2026-02-04T03:47:40.089890",
+      "expires_at": "2027-02-04T03:47:40.089890",
+      "match_score": 16,
+      "verified_skills": {
+        "core": [],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 0,
+      "signal_strength": "none",
+      "evidence": {
+        "ats_verified": true,
+        "github_verified": true,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": true
+      }
+    }
+  },
+  "20": {
+    "credential_id": 20,
+    "record": {
+      "hash": "21e27bb246efcdfc79590ff4d38836ae88d78dab66a82cb2f58fb4abfd86a73f",
+      "signature": "0x856d48120458fc5d9a0b4f351b3664f307e30296595858bb2663e234411b9aee71c5370a25a2a1436410b93c3a2a35e541c2aaef4635f591d273fa70ac1efa03",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 20,
+      "anon_id": "ANON-D45F28951B2C",
+      "issued_at": "2026-02-04T18:56:37.001190",
+      "expires_at": "2027-02-04T18:56:37.001190",
+      "match_score": 29,
+      "verified_skills": {
+        "core": [
+          "JavaScript",
+          "Python",
+          "TypeScript",
+          "CSS"
+        ],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 0,
+      "signal_strength": "none",
+      "evidence": {
+        "ats_verified": true,
+        "github_verified": true,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": true
+      }
+    }
+  },
+  "21": {
+    "credential_id": 21,
+    "record": {
+      "hash": "0a29becc11e1886aed98f976d295d3a24058556b40676eec97b3e5560d2663f7",
+      "signature": "0x2da5ecb1ef80f2579774da1b504a34610db03b6af1e71b68187751f3d9bc76b4e5ea2f7929f63cb19d68b72b8ce49bc3aef3e6ef4661173c4421c05252c47000",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 21,
+      "anon_id": "bmokR7XDuu83dnI0",
+      "issued_at": "2026-02-04T19:09:56.645691",
+      "expires_at": "2027-02-04T19:09:56.645691",
+      "match_score": 16,
+      "verified_skills": {
+        "core": [],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 0,
+      "signal_strength": "none",
+      "evidence": {
+        "ats_verified": true,
+        "github_verified": true,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": true
+      }
+    }
+  },
+  "22": {
+    "credential_id": 22,
+    "record": {
+      "hash": "dacfb36387cf5d15a6497552f86d5cd15c13824304d16ba648f35486ef15fc25",
+      "signature": "0x8bae0d28d02852f72f80ec417097d62cec5be4a54b724440765ef121a6c7f29aa858ac2658b487295ff0d50c166e79dad9d10e21c06728c17e7fad5a6860f903",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 22,
+      "anon_id": "VhtQQAvFwe4UB5NU",
+      "issued_at": "2026-02-04T19:12:01.215699",
+      "expires_at": "2027-02-04T19:12:01.215699",
+      "match_score": 29,
+      "verified_skills": {
+        "core": [
+          "JavaScript",
+          "Python",
+          "TypeScript",
+          "CSS"
+        ],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 0,
+      "signal_strength": "none",
+      "evidence": {
+        "ats_verified": true,
+        "github_verified": true,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": true
+      }
+    }
+  },
+  "23": {
+    "credential_id": 23,
+    "record": {
+      "hash": "a2312891fe741b1a14bb50e00a4afc8443d3920a81f0f828c073ca5c15daa981",
+      "signature": "0x58f1e21cebf0b57e9e1bb573ac64dfb9112265c53554881600ed1c668715240b56d95e7b646c666d40acbebe9beaecf10408ce54a8cf0e35e71f8f446a6c510f",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 23,
+      "anon_id": "CZLvqI6jos52T4Xl",
+      "issued_at": "2026-02-04T19:20:01.488652",
+      "expires_at": "2027-02-04T19:20:01.488652",
+      "match_score": 29,
+      "verified_skills": {
+        "core": [
+          "JavaScript",
+          "Python",
+          "TypeScript",
+          "CSS"
+        ],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 0,
+      "signal_strength": "none",
+      "evidence": {
+        "ats_verified": true,
+        "github_verified": true,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": true
+      }
+    }
+  },
+  "24": {
+    "credential_id": 24,
+    "record": {
+      "hash": "c5c05453cc637dc4a9ab6d36c4160f7a1f59d661aa0264aa37f3d718c9a31155",
+      "signature": "0xebc33834ac094991f15fb0d3d1d59da017c8ca3ed0b073c44c46ec10901092a2cca0efb17711b2bd7d898a2c574f265b4ac53ca419a86edefe658dbb9724eb02",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320"
+    },
+    "payload": {
+      "type": "SkillPassport",
+      "version": "1.0",
+      "application_id": 24,
+      "anon_id": "U22u8qwHs0A2dyeK",
+      "issued_at": "2026-02-04T19:23:03.417247",
+      "expires_at": "2027-02-04T19:23:03.417247",
+      "match_score": 29,
+      "verified_skills": {
+        "core": [
+          "JavaScript",
+          "Python",
+          "TypeScript",
+          "CSS"
+        ],
+        "frameworks": [],
+        "infrastructure": [],
+        "tools": []
+      },
+      "confidence": 62,
+      "signal_strength": "weak",
+      "evidence": {
+        "ats_verified": true,
+        "github_verified": true,
+        "leetcode_verified": false,
+        "codeforces_verified": false,
+        "linkedin_verified": false,
+        "bias_checked": true
+      }
+    }
+  }
+}

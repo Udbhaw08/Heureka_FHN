@@ -1,0 +1,172 @@
+﻿{
+  "source": "ats_resume_pdf",
+  "extraction_method": "agentic_narrative_validation",
+  "timestamp": "2026-02-03T09:48:30Z",
+  "agent_metadata": {
+    "agent": "ats_evidence_agent",
+    "version": "2026.2",
+    "framework": "antigravity-compatible",
+    "extraction_time_seconds": 25.15,
+    "deep_check_enabled": true
+  },
+  "identity": {
+    "name": "Udbhaw Anand",
+    "public_links": [
+      "github_present",
+      "linkedin_present"
+    ]
+  },
+  "experience": [
+    {
+      "company": "Archanion Engineering",
+      "role": "Computer Vision & UAV Autonomy Engineer",
+      "timeframe": "Nov 2025 \u2013 Present",
+      "claims": [
+        {
+          "action": "Developing autonomous flight and perception pipelines for UAV platforms focusing on real-time object detection, track-  tracking, and visual data quality validation",
+          "technology": [
+            "PX4",
+            "YOLOv8",
+            "MAVSDK"
+          ],
+          "outcome": null,
+          "evidence_strength": "high"
+        },
+        {
+          "action": "Working on YOLO model training workflows: dataset annotation, augmentation, validation, and iterative improvement  based on performance metrics",
+          "technology": [
+            "OpenCV",
+            "YOLOv8"
+          ],
+          "outcome": null,
+          "evidence_strength": "medium"
+        },
+        {
+          "action": "Integrating CV algorithms with flight control systems (PX4, MAVSDK) and testing in simulation environments",
+          "technology": [
+            "Gazebo",
+            "MAVSDK",
+            "PX4"
+          ],
+          "outcome": null,
+          "evidence_strength": "weak"
+        }
+      ]
+    },
+    {
+      "company": "Archanion Engineering",
+      "role": "AI TRANSCOM \u2013 Military Transport Management",
+      "timeframe": "Mar 2025 \u2013 Present",
+      "claims": [
+        {
+          "action": "Built a 9-module system for convoy planning, route optimization & fuel forecasting for defense logistics.",
+          "technology": [
+            "Python",
+            "Firebase",
+            "MERN"
+          ],
+          "outcome": null,
+          "evidence_strength": "high"
+        },
+        {
+          "action": "Improved planning speed by 30\u201340% and fuel forecasting by 20%, delivering secure, role-based, military- grade logistics.",
+          "technology": [
+            "Python",
+            "Firebase",
+            "MERN"
+          ],
+          "outcome": null,
+          "evidence_strength": "medium"
+        }
+      ]
+    },
+    {
+      "company": "Archanion Engineering",
+      "role": "Autonomous UAV Detection & Tracking System",
+      "timeframe": "Nov 2025 \u2013 Present",
+      "claims": [
+        {
+          "action": "Engineered autonomous UAV with YOLO-based real-time detection integrated with PX4 offboard control (MAVSDK,  Gazebo SITL).",
+          "technology": [
+            "Gazebo",
+            "PX4",
+            "YOLOv8",
+            "MAVSDK"
+          ],
+          "outcome": null,
+          "evidence_strength": "high"
+        },
+        {
+          "action": "Annotated and validated custom aerial dataset emphasizing consistency and edge cases.",
+          "technology": [
+            "Python",
+            "OpenCV"
+          ],
+          "outcome": null,
+          "evidence_strength": "medium"
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "project_name": "Blockchain-Based Blue Carbon MRV System",
+      "claims": [
+        {
+          "description": "Developed AI-powered mangrove detection system using YOLOv8 with dual models (aerial + ground  imagery) to verify carbon credit legitimacy through satellite and drone data validation.",
+          "evidence_strength": "high"
+        },
+        {
+          "description": "Built automated duplicate detection pipeline and Trust Score generation system to ensure data integrity  across 1000+ satellite image annotations.",
+          "evidence_strength": "medium"
+        },
+        {
+          "description": "Implemented end-to-end workflow: data collection, annotation, model training, inference, and verification  dashboard.",
+          "evidence_strength": "weak"
+        }
+      ]
+    },
+    {
+      "project_name": "AI TRANSCOM \u2013 Military Transport Management",
+      "claims": [
+        {
+          "description": "Built a 9-module system for convoy planning, route optimization & fuel forecasting for defense logistics.",
+          "evidence_strength": "high"
+        },
+        {
+          "description": "Improved planning speed by 30\u201340% and fuel forecasting by 20%, delivering secure, role-based, military- grade logistics.",
+          "evidence_strength": "medium"
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "skill": "Programming: Python, JavaScript"
+    },
+    {
+      "skill": "ML & CV: YOLOv8, OpenCV, Object Detection, Image Processing, Data Annotation"
+    },
+    {
+      "skill": "UAV: PX4, MAVSDK, Gazebo, MAVLink"
+    },
+    {
+      "skill": "Tools: Git, React.js, Jupyter, Linux"
+    },
+    {
+      "skill": "Core: Dataset Preparation, Bounding Box Annotation, Model Validation"
+    }
+  ],
+  "semantic_flags": [
+    {
+      "type": "timeline_overlap",
+      "issue": "Multiple full-time jobs at the same time (Nov 2025 \u2013 Present) for roles AI TRANSCOM \u2013 Military Transport Management and Autonomous UAV Detection & Tracking System",
+      "severity": "high"
+    },
+    {
+      "type": "tech_timeline",
+      "issue": "Technology 'PX4' mentioned before its release year (no specific date given)",
+      "severity": "medium"
+    }
+  ]
+}

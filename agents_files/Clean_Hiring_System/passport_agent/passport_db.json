@@ -1,0 +1,44 @@
+{
+  "anon_a7f3e9d2": {
+    "credential_id": "anon_a7f3e9d2",
+    "record": {
+      "hash": "dd8d78dcb83821916d00ad59c9c0d354d3c33f30ff33e1971adfccf0591639d3",
+      "signature": "0xc03905f94db26a599714cbaa4750f29a431a461dc8073b9497ae83b0353eb2075652271156989ca0249d8a17028d432a55c6a49e8d55d0d38a624ff063444b02",
+      "public_key": "0xd58e74948daa608cf36d083a5574f2719858a85c8ef93a3abdacce4c2730d320",
+      "verified_skills": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "skill_confidence": 82,
+      "match_score": 78,
+      "candidate": {},
+      "job_id": null,
+      "issuer": "FairHiringPlatform",
+      "issued_at": "2026-02-22T08:25:03.780430"
+    },
+    "payload": {
+      "credential_id": "anon_a7f3e9d2",
+      "application_id": "anon_a7f3e9d2",
+      "verified_skills": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "skill_confidence": 82,
+      "match_score": 78,
+      "evidence": {
+        "sources": [
+          "github",
+          "leetcode"
+        ],
+        "portfolio_score": 82,
+        "test_score": null,
+        "interview_signal": null
+      },
+      "issued_at": "2026-02-22T08:25:03.780430"
+    }
+  }
+}
