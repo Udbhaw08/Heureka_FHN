@@ -86,8 +86,13 @@ def main():
     print(f"[linkedin] Agent ID: {agent.agent_id}")
     print(f"[linkedin] Webhook URL: {agent.webhook_url}")
 
-    # Keep alive
-    import time
+    import signal, sys, time
+    def _shutdown(sig, frame):
+        print("\n[linkedin] Shutting down gracefully...")
+        sys.exit(0)
+    signal.signal(signal.SIGINT, _shutdown)
+    signal.signal(signal.SIGTERM, _shutdown)
+
     while True:
         time.sleep(1)
 

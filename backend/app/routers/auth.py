@@ -1,15 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 import secrets
 
 from app.database import get_db
-from app.models import Candidate
+from app.models import Candidate, Company
 from app.schemas import (
     CandidateRegister, CandidateLogin, CandidateResponse
 )
 from app.auth_utils import hash_password, verify_password
 from app.auth0_verifier import get_current_user_claims
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -62,16 +66,16 @@ async def candidate_login(payload: CandidateLogin, db: AsyncSession = Depends(ge
     q = await db.execute(select(Candidate).where(Candidate.email == payload.email.lower().strip()))
     cand = q.scalar_one_or_none()
     
-    print(f"[AUTH-DEBUG] Login attempt for: {payload.email}")
+    logger.info(f"Candidate login attempt for: {payload.email}")
     if not cand:
-        print(f"[AUTH-DEBUG] Candidate not found: {payload.email}")
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-        
-    if not verify_password(payload.password, cand.password_hash):
-        print(f"[AUTH-DEBUG] Password verification failed for: {payload.email}")
+        logger.warning(f"Candidate not found: {payload.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    print(f"[AUTH-DEBUG] Login successful: {payload.email}")
+    if not verify_password(payload.password, cand.password_hash):
+        logger.warning(f"Password verification failed for: {payload.email}")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    logger.info(f"Candidate login successful: {payload.email}")
 
     return CandidateResponse(
         id=cand.id,
@@ -90,46 +94,85 @@ async def candidate_login(payload: CandidateLogin, db: AsyncSession = Depends(ge
 @router.post("/company/signup")
 async def company_signup(payload: dict, db: AsyncSession = Depends(get_db)):
     """
-    Company signup - simplified version
+    Company signup with proper password hashing.
     Expects: {name, email, password}
     """
     email = payload.get("email", "").lower().strip()
     name = payload.get("name", "").strip()
     password = payload.get("password", "")
-    
+
     if not email or not name or not password:
         raise HTTPException(status_code=400, detail="Missing required fields")
-    
-    # For now, store company_id as email (simplified - no Company table)
-    # In production, you'd create a Company table
+
+    # Check if company already exists
+    q = await db.execute(select(Company).where(Company.email == email))
+    existing = q.scalar_one_or_none()
+    if existing:
+        raise HTTPException(status_code=409, detail="Company with this email already exists")
+
+    try:
+        pw_hash = hash_password(password)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    # Generate deterministic company_id from email
     company_id = email.replace("@", "_").replace(".", "_")
-    
+
+    company = Company(
+        id=company_id,
+        name=name,
+        email=email,
+        password_hash=pw_hash,
+    )
+    db.add(company)
+    await db.commit()
+    await db.refresh(company)
+
+    logger.info(f"Company signup successful: {email}")
     return {
-        "company_id": company_id,
-        "name": name,
-        "email": email
+        "company_id": company.id,
+        "name": company.name,
+        "email": company.email
     }
 
 
 @router.post("/company/login")
 async def company_login(payload: dict, db: AsyncSession = Depends(get_db)):
     """
-    Company login - simplified version
+    Company login with proper password verification.
     Expects: {email, password}
     """
     email = payload.get("email", "").lower().strip()
     password = payload.get("password", "")
-    
+
     if not email or not password:
         raise HTTPException(status_code=400, detail="Missing required fields")
-    
-    # Simplified - just return company_id based on email
-    company_id = email.replace("@", "_").replace(".", "_")
-    
+
+    q = await db.execute(select(Company).where(Company.email == email))
+    company = q.scalar_one_or_none()
+
+    logger.info(f"Company login attempt for: {email}")
+    if not company:
+        logger.warning(f"Company not found: {email}")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    # Handle existing companies that were created without password_hash
+    if company.password_hash is None:
+        logger.warning(f"Company {email} has no password set — re-register via /auth/company/signup")
+        raise HTTPException(
+            status_code=401,
+            detail="This company account has no password set. Please sign up again to set a password."
+        )
+
+    if not verify_password(password, company.password_hash):
+        logger.warning(f"Company password verification failed for: {email}")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    logger.info(f"Company login successful: {email}")
     return {
-        "company_id": company_id,
-        "name": "Company Name",  # Placeholder
-        "email": email
+        "company_id": company.id,
+        "name": company.name,
+        "email": company.email
     }
 
 
@@ -177,8 +220,13 @@ async def candidate_auth0_sync(
             password_hash=None,
         )
         db.add(cand)
-        await db.commit()
-        await db.refresh(cand)
+        try:
+            await db.commit()
+            await db.refresh(cand)
+        except IntegrityError:
+            await db.rollback()
+            q = await db.execute(select(Candidate).where(Candidate.auth0_id == auth0_id))
+            cand = q.scalar_one()
 
     return CandidateResponse(
         id=cand.id,

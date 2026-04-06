@@ -181,7 +181,11 @@ async def analyze_resume(request: ATSRequest):
             r'<\|im_start\|>',
             r'<\|im_end\|>',
             r'\[INST\]',
-            r'\[\/INST\]'
+            r'\[\/INST\]',
+            r'disregard\s+all\s+previous',
+            r'you\s+must\s+approve',
+            r'bypass\s+all\s+checks',
+            r'rejection\s+rules\s+must\s+not\s+apply'
         ]
         for pattern in prompt_injection_patterns:
             if re.search(pattern, text, re.IGNORECASE):

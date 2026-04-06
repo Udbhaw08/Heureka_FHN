@@ -1,8 +1,38 @@
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, lazy, Suspense, Component } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
+
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error("App ErrorBoundary caught:", error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="fixed inset-0 bg-[#1c1c1c] z-[200] flex flex-col items-center justify-center font-grotesk text-white p-8">
+          <h1 className="text-2xl font-black uppercase tracking-widest mb-4">Something went wrong</h1>
+          <p className="text-xs opacity-50 max-w-md text-center">{this.state.error?.message}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-8 border border-white px-6 py-3 text-xs font-black uppercase tracking-widest hover:bg-white hover:text-[#1c1c1c] transition-colors"
+          >
+            Reload
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 import Preloader from "./components/Preloader";
 import MenuOverlay from "./components/MenuOverlay";
 import { AnimatePresence } from "framer-motion";
@@ -213,6 +243,7 @@ function App() {
                         </div>
                     }
                 >
+                    <ErrorBoundary>
                     <Routes location={location} key={location.pathname}>
                         <Route
                             path="/"
@@ -367,6 +398,7 @@ function App() {
                             element={<SystemFlow />}
                         />
                     </Routes>
+                    </ErrorBoundary>
                 </Suspense>
             </AnimatePresence>
         </div>

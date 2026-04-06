@@ -27,11 +27,8 @@ def extract_text_from_pdf(file_path: str) -> str:
         
         # 2026 Fix: Ensure valid UTF-8 and remove unprintable chars that crash Windows console
         if text:
-            try:
-                text = text.encode('utf-8', errors='ignore').decode('utf-8')
-            except Exception:
-                pass
-        
+            text = text.encode('utf-8', errors='ignore').decode('utf-8')
+
         return text.strip()
     except Exception as e:
         logger.error(f"Failed to extract text from PDF: {str(e)}")

@@ -86,8 +86,13 @@ def main():
     print(f"[matching] Registry URL: {agent.agent_config.registry_url}")
     print(f"[matching] Capabilities: {agent.agent_config.capabilities}")
 
-    # Keep the process alive (Flask server runs in background thread)
-    import time
+    import signal, sys, time
+    def _shutdown(sig, frame):
+        print("\n[matching] Shutting down gracefully...")
+        sys.exit(0)
+    signal.signal(signal.SIGINT, _shutdown)
+    signal.signal(signal.SIGTERM, _shutdown)
+
     while True:
         time.sleep(1)
 

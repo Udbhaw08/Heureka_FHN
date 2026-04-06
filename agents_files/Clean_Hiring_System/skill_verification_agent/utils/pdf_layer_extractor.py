@@ -77,28 +77,31 @@ class WhiteTextDetector:
         suspicious_keywords = [
             "hire", "perfect", "candidate", "qualified", "expert",
             "ignore", "instructions", "approve", "score", "100",
-            "python", "java", "javascript", "react", "node",  # Tech keywords
-            "engineer", "developer", "manager", "lead"  # Titles
+            "python", "java", "javascript", "react", "node", "pytorch", "tensorflow", # Tech keywords
+            "engineer", "developer", "manager", "lead", "senior",
+            "faang", "google", "meta", "amazon", "apple", "netflix", # Prestige stuffing
+            "chatgpt", "openai", "generated", "ai", "llm" # Bot signatures
         ]
         
-        # Find suspicious hidden words
-        suspicious_matches = [
-            word for word in hidden_words 
-            if any(keyword in word.lower() for keyword in suspicious_keywords)
-        ]
+        # Find suspicious hidden words (using substring match to catch joined words)
+        suspicious_matches = []
+        for word in hidden_words:
+            word_lower = word.lower()
+            if any(keyword in word_lower for keyword in suspicious_keywords):
+                suspicious_matches.append(word)
         
         # Thresholds
         hidden_count = len(hidden_words)
         suspicious_count = len(suspicious_matches)
         
         # Determine severity
-        if suspicious_count > 5 or hidden_count > 100:
+        if suspicious_count > 3 or hidden_count > 80:
             severity = "critical"
             action = "immediate_blacklist"
-        elif suspicious_count > 2 or hidden_count > 50:
+        elif suspicious_count > 1 or hidden_count > 40:
             severity = "high"
             action = "queue_for_review"
-        elif hidden_count > 20:
+        elif hidden_count > 15:
             severity = "medium"
             action = "flag_for_review"
         else:

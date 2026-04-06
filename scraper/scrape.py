@@ -168,7 +168,8 @@ def get_contribution_history(html_content):
                 if count > 0:
                     active_dates.append(date_obj)
                     monthly_counts[month_key] = monthly_counts.get(month_key, 0) + count
-        except: continue
+        except (ValueError, KeyError, TypeError):
+                continue
 
     active_dates.sort()
     
@@ -214,7 +215,8 @@ def get_total_lifetime_contributions(username):
                 href = link.get_attribute("href")
                 if href and f"/{username}" in href and "?from=" in href:
                     year_urls.add(href)
-            except: continue
+            except (ValueError, AttributeError, TypeError):
+                continue
         
         if not year_urls:
             dropdown_items = driver.find_elements(By.CSS_SELECTOR, ".js-year-link")
@@ -238,7 +240,8 @@ def get_total_lifetime_contributions(username):
                 total_contributions += num
         return total_contributions
     except Exception as e:
-        return f"Error: {str(e)}"
+        # Return -1 to indicate error while keeping return type consistent
+        return -1
     finally:
         driver.quit()
 

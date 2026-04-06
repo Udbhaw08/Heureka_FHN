@@ -1,4 +1,10 @@
 """
+⚠️ DEPRECATED FILE — NOT USED BY ANY MODULE
+This file is NOT imported anywhere in the codebase. All active code uses models.py.
+This file exists as a reference for a future schema migration.
+Do NOT use these models — they are not registered with the database.
+To use a model from this file, copy its definition into models.py first.
+
 New Database Models for Fair Hiring System
 Rebuilt with proper constraints, indexes, and relationships
 """

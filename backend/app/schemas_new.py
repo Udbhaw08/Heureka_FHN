@@ -1,4 +1,10 @@
 """
+⚠️ DEPRECATED FILE — NOT USED BY ANY MODULE
+This file is NOT imported anywhere in the codebase. All active code uses schemas.py.
+This file exists as a reference for a future schema migration.
+Do NOT use these schemas — they are not validated against any endpoint.
+To use a schema from this file, copy its definition into schemas.py first.
+
 Pydantic Schemas for Fair Hiring System
 Request and response validation
 """

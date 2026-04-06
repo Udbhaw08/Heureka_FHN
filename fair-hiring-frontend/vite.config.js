@@ -7,8 +7,13 @@ export default defineConfig({
   envDir: '../',
   server: {
     host: true,
-    https: false,
+    
     proxy: {
+      '/api': {
+        target: 'http://localhost:8012',
+        changeOrigin: true,
+        secure: false,
+      },
       '/ollama-api': {
         target: 'http://localhost:11434',
         changeOrigin: true,

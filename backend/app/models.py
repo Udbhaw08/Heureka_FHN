@@ -6,13 +6,13 @@ from datetime import datetime
 from typing import Optional
 from enum import Enum
 
-from sqlalchemy import (
+from sqlalchemy import ( # type: ignore
     Column, Integer, String, Text, Boolean, Float, DateTime, 
     ForeignKey, Enum as SQLEnum
 )
-from sqlalchemy.dialects.postgresql import JSONB  # Import from here
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import JSONB  # type: ignore
+from sqlalchemy.orm import relationship # type: ignore
+from sqlalchemy.ext.declarative import declarative_base # type: ignore
 
 Base = declarative_base()
 
@@ -92,6 +92,7 @@ class Company(Base):
     id = Column(String(50), primary_key=True, index=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=True)  # Nullable for existing companies without passwords
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships

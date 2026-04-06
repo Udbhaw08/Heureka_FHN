@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__OpusCode__understand_image",
+      "Bash(find C:/Users/udbha/Desktop/HEUREKA_ACEHACK -type f -name *.py)",
+      "Bash(find C:/Users/udbha/Desktop/HEUREKA_ACEHACK/fair-hiring-frontend/src -type f \\\\\\(-name *.js -o -name *.jsx -o -name *.ts -o -name *.tsx \\\\\\))",
+      "Bash(git -C \"C:\\\\Users\\\\udbha\\\\Desktop\\\\HEUREKA_ACEHACK\" ls-files)",
+      "Bash(git -C \"C:\\\\Users\\\\udbha\\\\Desktop\\\\HEUREKA_ACEHACK\" ls-files --others --ignored --exclude-standard)",
+      "Bash(git -C C:UsersudbhaDesktopHEUREKA_ACEHACK log --all --oneline --source --remotes -- .env)",
+      "Bash(git -C \"C:\\\\Users\\\\udbha\\\\Desktop\\\\HEUREKA_ACEHACK\" ls-files --others)",
+      "Bash(grep -E \"\\\\.env$\")",
+      "Bash(curl -s http://localhost:11434/api/tags)",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(m['name']\\) for m in d.get\\('models',[]\\)]\")"
+    ]
+  }
+}

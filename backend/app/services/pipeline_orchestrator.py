@@ -1,24 +1,24 @@
+# pyright: reportMissingImports=false
 """
 Pipeline Orchestrator
 Manages the complete 10-stage agent pipeline execution
 """
 import logging
 import json
-import httpx
+import httpx # type: ignore
 import asyncio
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-from app.models import (
+from sqlalchemy.ext.asyncio import AsyncSession # type: ignore
+from sqlalchemy import select # type: ignore
+from sqlalchemy.orm import selectinload # type: ignore
+from app.models import ( # type: ignore
     Application, Candidate, Job, AgentRun, Credential, ReviewCase, Blacklist,
     AgentRunStatus, PipelineStatus, ApplicationStatus
 )
-from app.config import settings
-from app.passport import sign_credential
-from app.agent_client import AgentClient
-from datetime import datetime, timezone
+from app.config import settings # type: ignore
+from app.passport import sign_credential # type: ignore
+from app.agent_client import AgentClient # type: ignore
 
 log = logging.getLogger("uvicorn.error")
 
@@ -289,16 +289,29 @@ class PipelineOrchestrator:
                         "output_ref": "evidence.ats"
                     })
                     
-                    # Check for blacklist
-                    if ats_result.get("action") == "BLACKLIST":
+                    # Check for blacklist/rejection (from Guard OR legacy LLM)
+                    legacy_action = ats_result.get("evidence", {}).get("final_action", "")
+                    if ats_result.get("action") in ["BLACKLIST", "REJECTED"] or legacy_action in ["blacklist", "BLACKLIST", "BLACKLISTED", "rejected", "REJECTED"]:
                         log.warning(f"[PIPELINE] ATS blacklisted application {application_id}")
                         
                         # Blacklist candidate
                         blacklist = Blacklist(
                             candidate_id=app.candidate_id,
-                            reason=ats_result.get("reason", "ATS fraud detection")
+                            reason=ats_result.get("reason", ats_result.get("evidence", {}).get("human_review_reason", "ATS fraud detection"))
                         )
                         self.db.add(blacklist)
+
+                        # Create Review Case so reviewer can see the blacklist
+                        review = ReviewCase(
+                            application_id=application_id,
+                            job_id=app.job_id,
+                            candidate_id=app.candidate_id,
+                            triggered_by=stage,
+                            severity="critical",
+                            reason=ats_result.get("reason", ats_result.get("evidence", {}).get("human_review_reason", "ATS fraud detection")),
+                            evidence=ats_result
+                        )
+                        self.db.add(review)
                         
                         app.status = ApplicationStatus.rejected
                         app.pipeline_status = PipelineStatus.failed
@@ -311,7 +324,7 @@ class PipelineOrchestrator:
                         return self.state
                     
                     # Check for review
-                    if ats_result.get("action") == "NEEDS_REVIEW":
+                    if ats_result.get("action") in ["NEEDS_REVIEW", "REVIEW"] or legacy_action in ["review", "REVIEW", "PENDING_HUMAN_REVIEW", "NEEDS_REVIEW"]:
                         log.info(f"[PIPELINE] ATS flagged application {application_id} for review")
                         
                         review = ReviewCase(
@@ -617,9 +630,10 @@ class PipelineOrchestrator:
                     run.execution_time_ms = duration
                     
                     self.state["evidence"]["skills"] = skills_result
-                    
-                    # Handle nested or flat response
-                    output = skills_result.get("output", skills_result)
+
+                    # Unwrap {success, data, status_code} wrapper, then drill into "output"
+                    skills_data = skills_result.get("data", skills_result)
+                    output = skills_data.get("output", skills_data)
                     self.state["derived"]["verified_skills"] = output.get("verified_skills", [])
                     self.state["derived"]["test_required"] = output.get("test_required", False)
                     # FIX: Map skill_confidence to derived.confidence
@@ -787,39 +801,44 @@ class PipelineOrchestrator:
 
                 # Ensure defaults for critical fields
                 if "strict_requirements" not in jd_data:
-                    jd_data["strict_requirements"] = []
+                    jd_data["strict_requirements"] = [] # type: ignore
                 if "matching_philosophy" not in jd_data:
-                    jd_data["matching_philosophy"] = {"learning_velocity_weight": 0.2}
+                    jd_data["matching_philosophy"] = {"learning_velocity_weight": 0.2} # type: ignore
                 if "problem_solving" not in jd_data:
-                    jd_data["problem_solving"] = {"required": False}
+                    jd_data["problem_solving"] = {"required": False} # type: ignore
 
                 # Pull actual data from evidence if available
-                github_results = self.state["evidence"].get("github", {})
+                # Evidence is stored as {success, data, status_code} wrappers — unwrap .data
+                github_results_raw = self.state["evidence"].get("github", {}) or {}
+                github_results = github_results_raw.get("data", github_results_raw)
                 github_score = 0.5
                 if isinstance(github_results, dict):
                     sig = github_results.get("credibility_signal", {})
                     github_score = sig.get("score", 50) / 100.0 if "score" in sig else 0.5
-                
+
                 skills_results = self.state["evidence"].get("skills", {})
                 verified_skills = self.state["derived"].get("verified_skills", [])
-                
+
                 # --- SCHEMA ADAPTATION FOR MATCHING AGENT V2 ---
                 # 1. Gather raw experience from ATS (Primary source of narrative evidence)
-                ats_evidence = self.state["evidence"].get("ats", {})
+                ats_evidence_raw = self.state["evidence"].get("ats", {}) or {}
+                ats_data = ats_evidence_raw.get("data", ats_evidence_raw)
+                # ATS agent nests experience/identity under "evidence" key
+                ats_evidence = ats_data.get("evidence", ats_data)
                 experience = ats_evidence.get("experience", [])
                 identity = ats_evidence.get("identity", {})
                 
                 # Update identity with current application info
                 if not identity: identity = {}
-                identity["candidate_id"] = cand.id
-                identity["application_id"] = application_id
+                identity["candidate_id"] = cand.id # type: ignore
+                identity["application_id"] = application_id # type: ignore
                 
                 # Populate public links based on completed stages
                 public_links = identity.get("public_links", [])
                 if self._stage_ok("GITHUB"): public_links.append("github_present")
                 if self._stage_ok("LEETCODE"): public_links.append("leetcode_present")
                 if self._stage_ok("LINKEDIN"): public_links.append("linkedin_present")
-                identity["public_links"] = list(set(public_links))
+                identity["public_links"] = list(set(public_links)) # type: ignore
 
                 # 2. Flatten verified_skills from Stage 6 (Dictionary of categories)
                 flat_skills = []
@@ -872,15 +891,16 @@ class PipelineOrchestrator:
                     run.execution_time_ms = duration
                     
                     self.state["evidence"]["matching"] = matching_result
-                    
-                    # Handle nested or flat response
-                    output = matching_result.get("output", matching_result)
+
+                    # Unwrap {success, data, status_code} wrapper from agent_client
+                    matching_data = matching_result.get("data", matching_result)
+                    output = matching_data.get("output", matching_data)
                     analysis = output.get("analysis", {}) or {}
-                    
+
                     self.state["derived"]["match_score"] = output.get("match_score", 0)
                     self.state["derived"]["matched_skills"] = analysis.get("matched_skills", [])
                     self.state["derived"]["missing_skills"] = analysis.get("missing_skills", [])
-                    
+
                     self.state["stage_runs"][stage].update({
                         "status": "ok",
                         "ended_at": datetime.now(timezone.utc).isoformat(),
@@ -888,10 +908,10 @@ class PipelineOrchestrator:
                         "output_ref": "evidence.matching"
                     })
                     self.state["stages_completed"].append(stage)
-                    
+
                     # Update application with match score
                     app.match_score = output.get("match_score", 0)
-                    
+
                     # Flatten feedback for frontend
                     app.feedback_json = {
                         "breakdown": output.get("breakdown"),

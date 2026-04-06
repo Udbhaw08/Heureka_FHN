@@ -44,5 +44,3 @@ def verify_credential(credential: dict, signature_b64: str) -> bool:
         return True
     except Exception:
         return False
-    except Exception:
-        return False

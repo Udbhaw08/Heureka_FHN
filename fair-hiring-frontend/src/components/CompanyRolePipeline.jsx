@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import PipelineGrid from "./PipelineGrid";
 import JobDetailsModal from "./JobDetailsModal";
@@ -40,10 +40,9 @@ export default function CompanyRolePipeline({ roleId, onBack, onSelectCandidate,
         setLoading(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [companyId]);
 
-  const refreshApps = async (jid) => {
+  const refreshApps = useCallback(async (jid) => {
     if (!companyId || !jid) return;
     try {
       setLoading(true);
@@ -54,7 +53,7 @@ export default function CompanyRolePipeline({ roleId, onBack, onSelectCandidate,
     } finally {
       setLoading(false);
     }
-  };
+  }, [companyId]);
 
   useEffect(() => {
     if (roleId) setJobId(roleId);
@@ -62,8 +61,7 @@ export default function CompanyRolePipeline({ roleId, onBack, onSelectCandidate,
 
   useEffect(() => {
     refreshApps(jobId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobId]);
+  }, [jobId, refreshApps]);
 
   const columns = useMemo(() => {
     const byCol = {};

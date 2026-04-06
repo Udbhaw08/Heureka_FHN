@@ -39,17 +39,19 @@ class AgentClient:
         self.timeout = timeout
         
         # Agent service endpoints - Authoritative Map
+        # These defaults match agents_services/ and start_all_complete.py
+        # Set USE_ZYND=1 to route via Zynd orchestrator instead (ports 5101-5109)
         self.endpoints = {
-            "matching": os.getenv("MATCHING_SERVICE_URL", "http://localhost:5101"),
-            "bias": os.getenv("BIAS_SERVICE_URL", "http://localhost:5102"),
-            "skill": os.getenv("SKILL_SERVICE_URL", "http://localhost:5103"),
-            "ats": os.getenv("ATS_SERVICE_URL", "http://localhost:5104"),
-            "github": os.getenv("GITHUB_SERVICE_URL", "http://localhost:5106"),
-            "leetcode": os.getenv("LEETCODE_SERVICE_URL", "http://localhost:5108"),
-            "linkedin": os.getenv("LINKEDIN_SERVICE_URL", "http://localhost:5107"),
-            "passport": os.getenv("PASSPORT_SERVICE_URL", "http://localhost:8012"),
+            "matching": os.getenv("MATCHING_SERVICE_URL", "http://localhost:8001"),
+            "bias": os.getenv("BIAS_SERVICE_URL", "http://localhost:8002"),
+            "skill": os.getenv("SKILL_SERVICE_URL", "http://localhost:8003"),
+            "ats": os.getenv("ATS_SERVICE_URL", "http://localhost:8004"),
+            "github": os.getenv("GITHUB_SERVICE_URL", "http://localhost:8005"),
+            "leetcode": os.getenv("LEETCODE_SERVICE_URL", "http://localhost:8006"),
+            "linkedin": os.getenv("LINKEDIN_SERVICE_URL", "http://localhost:8007"),
+            "passport": os.getenv("PASSPORT_SERVICE_URL", "http://localhost:8008"),
             "job_description": os.getenv("JOB_DESCRIPTION_SERVICE_URL", "http://localhost:8009"),
-            "codeforces": os.getenv("CODEFORCES_SERVICE_URL", "http://localhost:5109"),
+            "codeforces": os.getenv("CODEFORCES_SERVICE_URL", "http://localhost:8010"),
         }
     
     async def close(self):
@@ -92,7 +94,12 @@ class AgentClient:
                 else:
                     logger.info(f"[zynd-orch] Discovered {agent_name}: {found[0]}")
                     result = orch.call_sync(found[0], payload)
-                    return result
+                    # FIX: Normalize Zynd response to match direct HTTP structure (data + success)
+                    return {
+                        "success": True,
+                        "data": result,
+                        "status_code": 200
+                    }
         url = f"{self.endpoints[agent_name]}{endpoint}"
         timeout = httpx.Timeout(self.timeout)
         retries = 3

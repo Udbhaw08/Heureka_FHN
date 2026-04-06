@@ -79,8 +79,9 @@ async def verify_auth0_token(token: str) -> dict:
                         "use": key["use"], "n": key["n"], "e": key["e"],
                     }
                     break
-        except Exception:
-            pass
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"[auth0_verifier] JWKS refresh failed: {e}")
 
     if not rsa_key:
         raise HTTPException(
@@ -93,8 +94,7 @@ async def verify_auth0_token(token: str) -> dict:
             token,
             rsa_key,
             algorithms=["RS256"],
-            # Audience is optional — we only need to verify user identity (sub/email).
-            options={"verify_aud": False},
+            audience=AUTH0_AUDIENCE,
             issuer=f"https://{AUTH0_DOMAIN}/",
         )
     except ExpiredSignatureError:

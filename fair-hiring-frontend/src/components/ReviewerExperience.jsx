@@ -88,22 +88,16 @@ export default function ReviewerExperience({ onExit }) {
             try {
                 if (companyId) {
                     const data = await api.reviewQueue(companyId);
-                    const realCases = Array.isArray(data) ? data : [];
-                    if (realCases.length > 0) {
-                        setQueue(realCases);
-                        setIsPreview(false);
-                    } else {
-                        setQueue(PREVIEW_QUEUE);
-                        setIsPreview(true);
-                    }
+                    setQueue(Array.isArray(data) ? data : []);
+                    setIsPreview(false);
                 } else {
-                    setQueue(PREVIEW_QUEUE);
-                    setIsPreview(true);
+                    setQueue([]);
+                    setIsPreview(false);
                 }
             } catch (e) {
-                console.warn("Failed to load review queue, using preview data", e);
-                setQueue(PREVIEW_QUEUE);
-                setIsPreview(true);
+                console.warn("Failed to load review queue");
+                setQueue([]);
+                setIsPreview(false);
             } finally {
                 setIsLoading(false);
             }
@@ -227,10 +221,10 @@ export default function ReviewerExperience({ onExit }) {
                                                 <div className="space-y-2">
                                                     <div className="flex items-center gap-4 flex-wrap">
                                                         <span className="font-montreal font-black text-2xl md:text-4xl uppercase tracking-tight text-[#1c1c1c]">
-                                                            {item.role || 'Technical Role'}
+                                                            {item.candidate_name || 'Anonymous Candidate'}
                                                         </span>
                                                         <span className={`px-3 py-1 ${getSeverityColor(item.severity)} text-white text-[9px] font-grotesk font-black uppercase tracking-widest rounded-sm`}>
-                                                            {item.severity || 'MEDIUM'}
+                                                            {item.severity === 'critical' ? 'BLACKLISTED' : (item.severity || 'NEEDS REVIEW')}
                                                         </span>
                                                         <span className="px-3 py-1 bg-[#1c1c1c] text-white border border-[#1c1c1c] text-[10px] font-grotesk font-black uppercase tracking-widest rounded-sm">
                                                             {item.candidate_anon_id}
@@ -280,14 +274,14 @@ export default function ReviewerExperience({ onExit }) {
                                         <span className="font-grotesk text-[10px] uppercase font-black tracking-widest opacity-40">REVIEW SESSION</span>
                                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                                         <span className={`px-3 py-1 ${getSeverityColor(selectedCase.severity)} text-white text-[9px] font-grotesk font-black uppercase tracking-widest rounded-sm`}>
-                                            {selectedCase.severity}
+                                            {selectedCase.severity === 'critical' ? 'BLACKLISTED' : selectedCase.severity}
                                         </span>
                                     </div>
                                     <h2 className="font-montreal font-black text-4xl md:text-6xl uppercase tracking-tighter leading-none">
-                                        {selectedCase.candidate_anon_id}
+                                        {selectedCase.candidate_name || selectedCase.candidate_anon_id}
                                     </h2>
-                                    <p className="font-inter text-[10px] font-black uppercase tracking-widest opacity-40">
-                                        {selectedCase.role || 'Technical Role'} · Case #{selectedCase.id}
+                                    <p className="font-inter text-[10px] font-black uppercase tracking-widest opacity-40 line-clamp-1 break-all">
+                                        {selectedCase.candidate_email} · {selectedCase.role || 'Technical Role'} · Case #{selectedCase.id}
                                     </p>
                                 </div>
                             </div>

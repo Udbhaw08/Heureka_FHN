@@ -14,6 +14,28 @@ export default function CompanyAuth({ onExit }) {
   const submit = async (e) => {
     e.preventDefault();
     setErr("");
+
+    // Client-side validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setErr("Please enter a valid email address");
+      return;
+    }
+    if (form.password.length < 8) {
+      setErr("Password must be at least 8 characters");
+      return;
+    }
+    if (mode === "signup") {
+      if (form.name.trim().length < 2) {
+        setErr("Company name must be at least 2 characters");
+        return;
+      }
+      if (!/[A-Z]/.test(form.password) || !/[0-9]/.test(form.password)) {
+        setErr("Password must contain at least one uppercase letter and one number");
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       if (mode === "signup") {

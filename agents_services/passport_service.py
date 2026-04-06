@@ -121,7 +121,7 @@ async def issue_credential(request: CredentialRequest):
         credential_id = f"cred_{hashlib.sha256(json.dumps(credential_payload, sort_keys=True).encode()).hexdigest()[:16]}"
         
         # Generate verification URL
-        verification_url = f"https://yourdomain.com/verify/{credential_id}"
+        verification_url = f"{os.getenv('PASSPORT_VERIFY_BASE_URL', 'https://yourdomain.com')}/verify/{credential_id}"
         
         return CredentialResponse(
             credential_id=credential_id,

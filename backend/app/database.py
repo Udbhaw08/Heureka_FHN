@@ -19,11 +19,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-# Database URL from environment
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+asyncpg://postgres:1234@localhost:5432/fair_hiring"
-)
+# Database URL from environment — no hardcoded password fallback
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable is not set. "
+        "Please configure your PostgreSQL connection string."
+    )
 
 # Create async engine
 engine = create_async_engine(

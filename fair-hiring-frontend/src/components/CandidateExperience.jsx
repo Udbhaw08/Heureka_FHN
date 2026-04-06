@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -62,7 +62,7 @@ export default function CandidateExperience({ onExit }) {
   }, []);
 
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     const anon = localStorage.getItem("fhn_candidate_anon_id");
     if (!anon) return;
 
@@ -107,11 +107,11 @@ export default function CandidateExperience({ onExit }) {
     } catch (e) {
       console.warn("Failed to load candidate applications", e);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAllData();
-  }, [candidateAnonId]);
+  }, [candidateAnonId, fetchAllData]);
 
   // Re-fetch when switching tabs to ensure freshness without page refresh
   useEffect(() => {

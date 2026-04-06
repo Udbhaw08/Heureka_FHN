@@ -22,8 +22,7 @@ class DualLLMClient:
         
         # OpenRouter Config
         self.openrouter_url = "https://openrouter.ai/api/v1/chat/completions"
-        # Use a reliable model for extraction
-        self.cloud_model = os.getenv("LLM_MODEL", "anthropic/claude-3.5-sonnet") 
+        self.cloud_model = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-8b-instruct:free")
 
     def call_ollama(self, prompt: str, system_prompt: str = "") -> Dict:
         """Execute prompt on Local Ollama."""

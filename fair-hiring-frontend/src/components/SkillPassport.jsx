@@ -220,7 +220,7 @@ const SkillPassport = ({ isStandalone = false, onBack, candidateId }) => {
             const cred = existingData?.credential || existingData?.credential_json || existingData;
             const derived = cred?.derived || {};
             const passportEvidence = cred?.evidence?.passport || {};
-            const skillsEvidence = cred?.evidence?.skills?.output || cred?.evidence?.skills || {};
+            const skillsEvidence = cred?.evidence?.skills?.data?.output || cred?.evidence?.skills?.output || cred?.evidence?.skills || {};
 
             // Extract verified_skills from multiple possible locations
             let existingSkills =
@@ -262,16 +262,17 @@ const SkillPassport = ({ isStandalone = false, onBack, candidateId }) => {
                 };
             }
 
-            // Extract confidence from multiple locations
-            const confidence =
-                derived?.confidence ||
-                derived?.skill_confidence ||
-                skillsEvidence?.skill_confidence ||
-                cred?.match_score ||
+            // Extract match score — this is the primary CONFIDENCE SCORE shown on the passport
+            const matchingEvidence = cred?.evidence?.matching;
+            const matchScore =
+                derived?.match_score ||
+                matchingEvidence?.match_score ||
+                matchingEvidence?.data?.match_score ||
+                matchingEvidence?.data?.output?.match_score ||
                 0;
 
-            // Extract match score
-            const matchScore = derived?.match_score || cred?.evidence?.matching?.match_score || 0;
+            // skill_confidence is the portfolio signal score (internal, not shown as main confidence)
+            const confidence = matchScore || derived?.confidence || derived?.skill_confidence || skillsEvidence?.skill_confidence || 0;
 
             // Extract status
             const pipelineStatus = cred?.pipeline_status || cred?.application_status || "";
@@ -408,7 +409,7 @@ const SkillPassport = ({ isStandalone = false, onBack, candidateId }) => {
                     </div>
                 ) : passportSkills.length > 0 ? (
                     passportSkills.map((skill, idx) => (
-                        <div key={idx} className="relative group/skill">
+                        <div key={skill.id || `skill-${idx}`} className="relative group/skill">
                             <button
                                 onClick={() => setSelectedSkill(skill)}
                                 className="w-full text-left group flex flex-col md:flex-row border-b border-[#1c1c1c]/15 py-8 md:py-12 items-start md:items-center justify-between hover:bg-black/5 transition-all duration-500 px-4 -mx-4 cursor-pointer gap-6 md:gap-0"

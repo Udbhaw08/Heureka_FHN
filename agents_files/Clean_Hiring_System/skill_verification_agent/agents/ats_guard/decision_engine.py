@@ -27,15 +27,16 @@ def decide(flags: list) -> dict:
     
     # Short-circuit on critical flags (FIX #2: No severity stacking)
     for flag in flags:
-        if flag["severity"] == "critical":
+        severity = flag.get("severity", "unknown")
+        if severity == "critical":
             has_critical = True
             trust = 0
             break  # Immediate rejection, no further processing
-        elif flag["severity"] == "high":
+        elif severity == "high":
             trust -= 25
-        elif flag["severity"] == "medium":
+        elif severity == "medium":
             trust -= 15
-        elif flag["severity"] == "low":
+        elif severity == "low":
             trust -= 5
     
     # Floor at 0
@@ -61,7 +62,7 @@ def decide(flags: list) -> dict:
     
     # Add critical flag details if present
     if has_critical:
-        critical_flags = [f for f in flags if f["severity"] == "critical"]
+        critical_flags = [f for f in flags if f.get("severity") == "critical"]
         result["critical_flags"] = critical_flags
         result["reason"] = "Critical ATS manipulation detected"
     

@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
+# pyright: reportMissingImports=false
+from fastapi import APIRouter, Depends, HTTPException # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession # type: ignore
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-from app.database import get_db
-from app.models import Job, Application, Candidate, Credential, AgentRun, ReviewCase, Company, Blacklist
-from app.agents.jd_bias import JobBiasAgent
-from app.agents.job_extraction import JobExtractionAgent
-from sqlalchemy import select, func
-from app.agent_client import AgentClient
-from app.audit import log_event
+from app.database import get_db # type: ignore
+from app.models import Job, Application, Candidate, Credential, AgentRun, ReviewCase, Company, Blacklist # type: ignore
+from app.agents.jd_bias import JobBiasAgent # type: ignore
+from app.agents.job_extraction import JobExtractionAgent # type: ignore
+from sqlalchemy import select, func # type: ignore
+from app.agent_client import AgentClient # type: ignore
+from app.audit import log_event # type: ignore
 import logging
 
 # Configure logging
@@ -32,7 +33,7 @@ async def call_match_agent(payload: dict) -> Dict[str, Any]:
 @router.get("/{company_id}/jobs")
 async def list_company_jobs(company_id: str, db: AsyncSession = Depends(get_db)):
     """List all jobs for a company"""
-    print(f"[DEBUG] Fetching jobs for company_id: {company_id}")
+    logger.info(f"Fetching jobs for company_id: {company_id}")
     # Return jobs with aggregated application counts for dashboard cards.
     q = await db.execute(
         select(
@@ -76,14 +77,14 @@ async def analyze_jd_bias(payload: dict):
         result = bias_agent.analyze(description)
         return result
     except Exception as e:
-        print(f"Real-time Bias Audit Error: {e}")
+        logger.error(f"Real-time Bias Audit Error: {e}")
         return {"bias_score": 0, "findings": [], "error": str(e)}
 
 
 @router.post("/job")
 async def create_job(payload: dict, db: AsyncSession = Depends(get_db)):
     """Create a new job posting with AI bias audit"""
-    print(f"[DEBUG] create_job payload: {payload}")
+    logger.debug(f"create_job payload: {payload}")
     company_id = payload.get("company_id")
     title = payload.get("title")
     description = payload.get("description")
@@ -91,7 +92,7 @@ async def create_job(payload: dict, db: AsyncSession = Depends(get_db)):
     max_participants = payload.get("max_participants", 5)
     required_skills = payload.get("required_skills", {})
     
-    print(f"[DEBUG] Processing job creation: {title} for {company_id}")
+    logger.info(f"Processing job creation: {title} for {company_id}")
     
     if not company_id or not title or not description:
         raise HTTPException(status_code=400, detail="Missing required fields")
@@ -119,7 +120,7 @@ async def create_job(payload: dict, db: AsyncSession = Depends(get_db)):
     
     # 1. AI BIAS AUDIT (Stage 0)
     # Using JobBiasAgent instead of hardcoded keywords
-    print(f"[DEBUG] Starting Bias Audit for: {title}")
+    logger.info(f"Starting Bias Audit for: {title}")
     try:
         bias_agent = JobBiasAgent()
         bias_result = bias_agent.analyze(description)
@@ -127,27 +128,27 @@ async def create_job(payload: dict, db: AsyncSession = Depends(get_db)):
         fairness_score = 100 - (bias_result.get("bias_score", 0) * 10)
         fairness_status = "VERIFIED" if fairness_score >= 80 else "FLAGGED"
         fairness_findings = bias_result.get("findings", [])
-        print(f"[DEBUG] Bias Audit Completed. Score: {fairness_score}")
+        logger.info(f"Bias Audit Completed. Score: {fairness_score}")
     except Exception as e:
-        print(f"[ERROR] Bias Audit Failed: {e}")
+        logger.error(f"Bias Audit Failed: {e}")
         # Fallback to neutral if AI fails
         fairness_score = 100
         fairness_status = "VERIFIED"
         fairness_findings = []
 
     # 2. AI SKILL/INTENT EXTRACTION (Stage 0.5)
-    print(f"[DEBUG] Starting Skill Extraction for: {title}")
+    logger.info(f"Starting Skill Extraction for: {title}")
     intelligence_spec = {}
     try:
         jd_agent = JobExtractionAgent()
         intelligence_spec = jd_agent.extract(description, title=title)
-        print(f"[DEBUG] JD Intelligence v2 extracted: {intelligence_spec.get('role', 'Unknown')}")
+        logger.debug(f"JD Intelligence v2 extracted: {intelligence_spec.get('role', 'Unknown')}")
     except Exception as e:
-        print(f"[ERROR] JD Intelligence Error: {e}")
+        logger.error(f"JD Intelligence Error: {e}")
         intelligence_spec = {"required_skills": []}
 
     # 3. CREATE JOB
-    print(f"[DEBUG] Committing job to DB...")
+    logger.info(f"Committing job to DB...")
     
     # FAVOR user-provided required_skills if they are non-empty, merge with AI extraction if success
     final_skills = required_skills or {}
@@ -174,7 +175,7 @@ async def create_job(payload: dict, db: AsyncSession = Depends(get_db)):
     db.add(job)
     await db.commit()
     await db.refresh(job)
-    print(f"[DEBUG] Job persisted successfully with ID: {job.id}")
+    logger.info(f"Job persisted successfully with ID: {job.id}")
     
     return {
         "job_id": job.id, 
@@ -260,7 +261,7 @@ async def run_matching(company_id: str, job_id: int, db: AsyncSession = Depends(
         # 3. Handle failed job extraction (error object in required_skills)
         job_skills = job.required_skills
         if isinstance(job_skills, dict) and "error" in job_skills:
-            print(f"[WARN] Job {job.id} has extraction error, using empty requirements")
+            logger.warning(f"Job {job.id} has extraction error, using empty requirements")
             job_skills = {
                 "strict_requirements": [],
                 "languages": [],
@@ -276,22 +277,22 @@ async def run_matching(company_id: str, job_id: int, db: AsyncSession = Depends(
             }
         }
         try:
-            print(f"[DEBUG] Calling matching agent for app_id: {a.id}")
+            logger.debug(f"Calling matching agent for app_id: {a.id}")
             res: Dict[str, Any] = await call_match_agent(payload)
-            print(f"[DEBUG] Matching agent result: {res}")
+            logger.debug(f"Matching agent result: {res}")
             score = int(res.get("match_score", res.get("output", {}).get("match_score", 0)) or 0)
             breakdown = res.get("breakdown") or res.get("output", {}).get("breakdown")
             analysis = res.get("analysis") or res.get("output", {}).get("analysis") or {}
         except Exception as e:
-            print(f"[ERROR] Matching agent failed for app_id {a.id}: {e}")
+            logger.error(f"Matching agent failed for app_id {a.id}: {e}")
             score = int(cred.credential_json.get("confidence", 0))
             breakdown = None
             analysis = {}
         scored.append((a, score, breakdown, analysis))
 
     scored.sort(key=lambda t: t[1], reverse=True)
-    k = job.max_participants or 5
-    selected = set(x[0].id for x in scored[:k])
+    k = int(job.max_participants or 5)
+    selected = set(x[0].id for x in scored[:k]) # type: ignore
 
     for a, score, breakdown, analysis in scored:
         a.match_score = score
@@ -405,7 +406,7 @@ async def review_queue(company_id: str, db: AsyncSession = Depends(get_db)):
 
         # Extract evidence signals from credential
         evidence_data = cred_json.get("evidence", {}) if isinstance(cred_json, dict) else {}
-        evidence_sources = [k.upper() for k in evidence_data.keys() if evidence_data.get(k)]
+        evidence_sources = [str(k).upper() for k in evidence_data.keys() if evidence_data.get(k)]
 
         out.append({
             "id": rc.id,
@@ -413,6 +414,8 @@ async def review_queue(company_id: str, db: AsyncSession = Depends(get_db)):
             "job_id": rc.job_id,
             "role": job.title,
             "candidate_anon_id": cand.anon_id,
+            "candidate_name": cand.name,
+            "candidate_email": cand.email,
             "severity": rc.severity,
             "reason": rc.reason,
             "status": rc.status,

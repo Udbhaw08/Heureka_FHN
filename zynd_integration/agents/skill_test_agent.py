@@ -60,7 +60,13 @@ def main():
     agent = build_agent()
     attach_handler(agent)
     print(f"[skill-test] Agent ID: {agent.agent_id}")
-    import time
+    import signal, sys, time
+    def _shutdown(sig, frame):
+        print("\n[skill-test] Shutting down gracefully...")
+        sys.exit(0)
+    signal.signal(signal.SIGINT, _shutdown)
+    signal.signal(signal.SIGTERM, _shutdown)
+
     while True:
         time.sleep(1)
 

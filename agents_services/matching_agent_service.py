@@ -85,7 +85,6 @@ async def health_check():
     return {"status": "healthy", "service": "matching_agent_v2_hardened"}
 
 if __name__ == "__main__":
-    import uvicorn
-    # Canonical port for Matching Agent (from AgentClient)
-    port = 8001 
+    import uvicorn, os
+    port = int(os.getenv("PORT", 8001))
     uvicorn.run(app, host="0.0.0.0", port=port)

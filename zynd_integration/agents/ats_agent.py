@@ -1,3 +1,4 @@
+# pyright: reportMissingImports=false
 """Zynd webhook wrapper for ats agent.
 
 This exposes the agent on Zynd's standard webhook endpoints:
@@ -11,18 +12,20 @@ The business logic is reused from your existing codebase (no rewrite).
 import os
 import sys
 from pathlib import Path
-from dotenv import load_dotenv
-from zyndai_agent.agent import AgentConfig, ZyndAIAgent
-from zyndai_agent.message import AgentMessage
+from dotenv import load_dotenv # type: ignore
+from zyndai_agent.agent import AgentConfig, ZyndAIAgent # type: ignore
+from zyndai_agent.message import AgentMessage # type: ignore
 
-from .common import parse_json_content, dump_json
+from .common import parse_json_content, dump_json # type: ignore
 
 load_dotenv()
 
 # 2026 Fix: Force UTF-8 encoding for stdout/stderr on Windows to prevent charmap errors
 if sys.platform.startswith('win'):
-    sys.stdout.reconfigure(encoding='utf-8')
-    sys.stderr.reconfigure(encoding='utf-8')
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8') # type: ignore
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8') # type: ignore
 
 # Ensure the Clean_Hiring_System package is importable when running from repo root
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -62,37 +65,44 @@ def attach_handler(agent: ZyndAIAgent) -> None:
             if not resume_path and not resume_text:
                 result = {"error": "Missing resume_path AND resume_text in payload", "agent": "ats"}
             else:
-                from skill_verification_agent.agents.ats_guard import run_ats_guard
-                from skill_verification_agent.agents.ats import ATSEvidenceAgent
+                from skill_verification_agent.agents.ats_guard import run_ats_guard # type: ignore
+                from skill_verification_agent.agents.ats import ATSEvidenceAgent # type: ignore
                 
                 # Step 1: Run Security Guard
                 guard_result = {}
                 if resume_path:
                     guard_result = run_ats_guard(resume_path)
                 
-                # Step 2: Run Evidence Extraction
-                # Initialize agent (lazy-load style)
-                ats_impl = ATSEvidenceAgent(llm=None)
-                extraction_result = ats_impl.extract_evidence(
-                    pdf_path=resume_path,
-                    resume_text=resume_text,
-                    evaluation_id=str(application_id) if application_id else None
-                )
+                # Fast-fail if guard rejected
+                status = guard_result.get("security_status", "OK")
+                action = "BLACKLIST" if status == "REJECTED" else ("NEEDS_REVIEW" if status == "REVIEW" else status)
+                
+                extraction_result = {}
+                if status != "REJECTED":
+                    # Step 2: Run Evidence Extraction only if guard passed/review
+                    ats_impl = ATSEvidenceAgent(llm=None)
+                    extraction_result = ats_impl.extract_evidence(
+                        pdf_path=resume_path,
+                        resume_text=resume_text,
+                        evaluation_id=str(application_id) if application_id else None
+                    )
                 
                 # Merge Results
+                flags_list = guard_result.get("flags") or []
                 result = {
                     "success": True,
-                    "action": guard_result.get("security_status", "OK"),
+                    "action": action,
                     "trust_score": guard_result.get("trust_score", 100),
-                    "flags": [f["type"] for f in guard_result.get("flags", [])] if guard_result.get("flags") else [],
+                    "flags": [f.get("type", "") for f in flags_list if isinstance(f, dict)],
                     "evidence": extraction_result,
                     "skills": extraction_result.get("skills", []),
                     "experience": extraction_result.get("experience", []),
                     "identity": extraction_result.get("identity", {})
                 }
-                print(f"[ats-debug] Extraction complete. Skills found: {len(result['skills'])}")
-                if result['skills']:
-                    print(f"[ats-debug] First 3 skills: {result['skills'][:3]}")
+                skills_list = result.get('skills') or []
+                print(f"[ats-debug] Extraction complete. Skills found: {len(skills_list)}") # type: ignore
+                if skills_list:
+                    print(f"[ats-debug] First 3 skills: {skills_list[:3]}") # type: ignore
         except Exception as e:
             import traceback
             print(f"[ats] Error in handler: {str(e)}")
@@ -113,8 +123,13 @@ def main():
     print(f"[ats] Registry URL: {agent.agent_config.registry_url}")
     print(f"[ats] Capabilities: {agent.agent_config.capabilities}")
 
-    # Keep the process alive (Flask server runs in background thread)
-    import time
+    import signal, sys, time
+    def _shutdown(sig, frame):
+        print("\n[ats] Shutting down gracefully...")
+        sys.exit(0)
+    signal.signal(signal.SIGINT, _shutdown)
+    signal.signal(signal.SIGTERM, _shutdown)
+
     while True:
         time.sleep(1)
 

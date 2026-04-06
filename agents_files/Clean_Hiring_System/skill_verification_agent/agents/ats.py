@@ -43,7 +43,7 @@ except ImportError:
     # Fallback to defaults
     LLM_BACKEND = "ollama"
     OLLAMA_MODEL = "llama3.1"
-    OPENROUTER_SCRAPER_MODEL = "anthropic/claude-3-haiku"
+    OPENROUTER_SCRAPER_MODEL = "meta-llama/llama-3.1-8b-instruct:free"
     OPENROUTER_API_KEY = None
     OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 

@@ -9,9 +9,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from typing import Dict, Any
 from datetime import datetime
+import logging
 
 from app.database import get_db
-from app.models import Application, Candidate, Job
+from app.models import Application, Candidate, Job, ApplicationStatus
 from app.schemas import (
     ApplicationCreateRequest,
     ApplicationResponse,
@@ -21,6 +22,7 @@ from app.schemas import (
 from app.services.pipeline_service import PipelineService
 
 router = APIRouter(prefix="/api/applications", tags=["Applications"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("", response_model=ApplicationResponse)
@@ -56,8 +58,8 @@ async def create_application(
             detail="Candidate not found"
         )
     
-    # Find job
-    query = select(Job).where(Job.id == request.job_id)
+    # Find job (eager-load company for name lookup)
+    query = select(Job).options(selectinload(Job.company)).where(Job.id == request.job_id)
     result = await db.execute(query)
     job = result.scalar_one_or_none()
     
@@ -96,7 +98,7 @@ async def create_application(
         existing.leetcode_url = request.leetcode_url
         existing.linkedin_url = request.linkedin_url
         existing.codeforces_url = request.codeforces_url
-        existing.status = "pending"
+        existing.status = ApplicationStatus.pending
         existing.pipeline_status = "not_started"
         existing.updated_at = datetime.utcnow()
         
@@ -117,7 +119,7 @@ async def create_application(
             leetcode_url=request.leetcode_url,
             linkedin_url=request.linkedin_url,
             codeforces_url=request.codeforces_url,
-            status="pending",
+            status=ApplicationStatus.pending,
             pipeline_status="not_started",
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
@@ -139,7 +141,7 @@ async def create_application(
         candidate_id=application.candidate_id,
         job_id=application.job_id,
         job_title=job.title,
-        company_name=job.company_id,
+        company_name=job.company.name if job.company else job.company_id,
         status=application.status,
         pipeline_status=application.pipeline_status,
         created_at=application.created_at.isoformat()
@@ -161,7 +163,7 @@ async def run_pipeline_background(application_id: int):
             await pipeline_service.run_pipeline(application_id)
         except Exception as e:
             # Log error but don't crash
-            print(f"Pipeline failed for application {application_id}: {str(e)}")
+            logger.error(f"Pipeline failed for application {application_id}: {str(e)}")
         finally:
             await pipeline_service.close()
 

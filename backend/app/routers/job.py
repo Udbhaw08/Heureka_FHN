@@ -6,8 +6,10 @@ Handles job creation and retrieval
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from typing import List, Dict, Any
 from datetime import datetime
+import logging
 
 from app.database import get_db
 from app.models import Job, Company
@@ -21,6 +23,7 @@ from app.schemas import (
 )
 
 router = APIRouter(prefix="/api/jobs", tags=["Jobs"])
+logger = logging.getLogger(__name__)
 
 
 @router.get("", response_model=JobListResponse)
@@ -38,8 +41,8 @@ async def list_jobs(
     Returns:
         List of jobs
     """
-    query = select(Job)
-    
+    query = select(Job).options(selectinload(Job.company))
+
     if published_only:
         query = query.where(Job.published == True)
     
@@ -52,7 +55,7 @@ async def list_jobs(
         job_list.append({
             "job_id": job.id,
             "company_id": job.company_id,
-            "company_name": job.company_id,  # Using company_id as name since no Company model
+            "company_name": job.company.name if job.company else job.company_id,
             "title": job.title,
             "description": job.description,
             "required_skills": job.required_skills,
@@ -87,7 +90,7 @@ async def get_job(
     Returns:
         Detailed job information
     """
-    query = select(Job).where(Job.id == job_id)
+    query = select(Job).options(selectinload(Job.company)).where(Job.id == job_id)
     result = await db.execute(query)
     job = result.scalar_one_or_none()
     
@@ -101,7 +104,7 @@ async def get_job(
         success=True,
         job_id=job.id,
         company_id=job.company_id,
-        company_name=job.company_id,  # Using company_id as name since no Company model
+        company_name=job.company.name if job.company else job.company_id,
         title=job.title,
         description=job.description,
         required_skills=job.required_skills,
@@ -146,7 +149,7 @@ async def create_job(
             # Use agent-based extraction (configurable port)
             agent_client = AgentClient()
             description = request.description or ""
-            print("Auto-extracting skills via job_description agent...")
+            logger.info("Auto-extracting skills via job_description agent...")
             
             jd_result = await agent_client.call_agent(
                 "job_description",
@@ -161,7 +164,7 @@ async def create_job(
                 extracted_data = jd_result.get("data", {})
             else:
                 # Fallback to local extraction if agent fails
-                print(f"Agent extraction failed: {jd_result.get('error')}, falling back to local")
+                logger.warning(f"Agent extraction failed: {jd_result.get('error')}, falling back to local")
                 extraction_agent = JobExtractionAgent()
                 extracted_data = extraction_agent.extract(description, title=request.title)
             
@@ -177,10 +180,10 @@ async def create_job(
             
             # Save the raw v3 dictionary (4-pillar metadata)
             skills_to_save = extracted_data
-            print(f"Extracted v3 metadata: {skills_to_save.get('role')}")
+            logger.debug(f"Extracted v3 metadata: {skills_to_save.get('role')}")
             
         except Exception as e:
-            print(f"Skill Extraction Error: {e}")
+            logger.error(f"Skill Extraction Error: {e}")
             skills_to_save = []
 
     # 3. AI BIAS AUDIT
@@ -193,12 +196,12 @@ async def create_job(
         fairness_status = "VERIFIED" if fairness_score >= 80 else "FLAGGED"
         fairness_findings = bias_result.get("findings", [])
     except Exception as e:
-        print(f"Bias Audit Error in Job Router: {e}")
+        logger.error(f"Bias Audit Error in Job Router: {e}")
         fairness_score = 100
         fairness_status = "VERIFIED"
         fairness_findings = []
 
-    # 3. Create job
+    # 4. Create job
     job = Job(
         company_id=request.company_id,
         title=request.title,
@@ -248,7 +251,7 @@ async def publish_job(
     Returns:
         Updated job information
     """
-    query = select(Job).where(Job.id == job_id)
+    query = select(Job).options(selectinload(Job.company)).where(Job.id == job_id)
     result = await db.execute(query)
     job = result.scalar_one_or_none()
     
@@ -268,7 +271,7 @@ async def publish_job(
         success=True,
         job_id=job.id,
         company_id=job.company_id,
-        company_name=job.company_id,  # Using company_id as name since no Company model
+        company_name=job.company.name if job.company else job.company_id,
         title=job.title,
         description=job.description,
         required_skills=job.required_skills,

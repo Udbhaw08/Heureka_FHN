@@ -1,0 +1,63 @@
+Udbhaw Anand 
+Delhi, India | +91-8826867932 | udbhawanand7@gmail.com 
+LinkedIn | GitHub 
+PROFILE  
+AI Engineering student specializing in Computer Vision, Object Detection, and ML -driven autonomy sys- 
+tems. Hands-on experience with YOLO -based real-time detection pipelines, UAV autonomy, and data 
+validation workflows. Proven track record in building end-to-end AI solutions for defense-tech.3x 
+Hackathon Winner with expertise in annotation quality, model training, and visual data processing. 
+TECHNICAL SKILLS  
+Programming Languages: Python, JavaScript 
+ML & Computer Vision: YOLOv8, OpenCV, Object Detection, Object Tracking, Image Processing, Data 
+Annotation 
+UAV & Robotics: PX4, MAVSDK, SITL, Gazebo, MAVLink, Autonomous Navigation 
+Development Tools: Git, React.js, Tailwind CSS, Jupyter Notebook, Linux 
+Core Competencies: Dataset Preparation, Bounding Box Annotation, Model Validation, AI Pipeline De- 
+sign 
+KEY PROJECTS  
+Blockchain-Based Blue Carbon MRV System                                                    (Sept 2025 – Nov 2025) 
+• Developed AI-powered mangrove detection system using YOLOv8 with dual models (aerial + ground 
+imagery) to verify carbon credit legitimacy through satellite and drone data validation 
+• Built automated duplicate detection pipeline and Trust Score generation system to ensure data integrity 
+across 1000+ satellite image annotations 
+• Implemented end-to-end workflow: data collection, annotation, model training, inference, and verification 
+dashboard 
+• Technologies: YOLOv8, OpenCV, Python, React.js, Computer Vision, Geospatial Data Processing 
+ 
+AI TRANSCOM – AI-Powered Military Transport Management                               (Mar 2025 – Present) 
+● Team Lead  
+● Built a 9-module system for convoy planning, route optimization & fuel forecasting for defense logistics.  
+● Improved planning speed by 30–40% and fuel forecasting by 20%, delivering secure, role-based, 
+military-grade logistics. 
+ ● Tech Stack: MERN (MongoDB, Express.js, React.js, Node.js), Firebase, Python, AI/ML 
+ 
+Autonomous UAV Detection & Tracking System                   (Nov 2025- Present) 
+• Engineered autonomous UAV system integrating YOLO-based real-time object detection with PX4 off- 
+board flight control using MAVSDK in simulated environment (Gazebo SITL) 
+• Implemented MAVLink NED setpoint pipelines with safety checks, autonomous search patterns, target 
+lock-on, and precision descent behaviors 
+• Annotated and validated custom aerial dataset for detection model training with emphasis on annotation 
+consistency and edge cases 
+• Technologies: YOLOv8, PX4, MAVSDK, Gazebo, OpenCV, Python, MAVLink, Autonomous Control 
+Systems 
+EXPERIENCE  
+Computer Vision & UAV Autonomy Engineer Nov 2025 – Present 
+Archanion Engineering, Ghaziabad, India 
+• Developing autonomous flight and perception pipelines for UAV platforms with focus on real-time object 
+detection, tracking, and validation of visual data quality 
+• Working on YOLO model training workflows including dataset annotation, augmentation, validation, and 
+iterative model improvement based on performance metrics 
+• Integrating computer vision algorithms with flight control systems (PX4, MAVSDK) and conducting ex- 
+tensive testing in simulation environments 
+• Collaborating on end-to-end AI pipelines covering data collection, annotation standards, model training, 
+deployment, and real-world testing 
+EDUCATION  
+Bachelor of Technology in Artificial Intelligence 2023 – 2027 
+ABES Institute of Technology, Ghaziabad, India Currently in 3rd Year 
+ACHIEVEMENTS & CERTIFICATIONS  
+• 3x Hackathon Winner: Led teams to victory in national-level hackathons focusing on AI, computer 
+vision, and real-world problem solving with ML-driven solutions 
+• Developed multiple end-to-end AI systems deployed in defense-tech, environmental monitoring, and 
+infrastructure automation domains 
+• Active contributor to autonomous systems and computer vision projects with emphasis on practical  
+deployment and real-world validation

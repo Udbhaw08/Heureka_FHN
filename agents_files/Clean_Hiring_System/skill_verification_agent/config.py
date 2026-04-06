@@ -11,7 +11,7 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 # Model Selection
-SKILL_VERIFICATION_MODEL = os.getenv("LLM_MODEL", "anthropic/claude-3-haiku")
+SKILL_VERIFICATION_MODEL = os.getenv("LLM_MODEL", "meta-llama/llama-3.1-8b-instruct:free")
 MODEL_TEMPERATURE = 0.3
 
 # Scoring Weights
@@ -41,13 +41,13 @@ ENABLE_LINKEDIN = False  # Set to True if you implement user upload
 # ===== SCRAPER CONFIGURATION =====
 # LLM Backend for profile parsing
 # Options: "ollama" (local, free) or "openrouter" (cloud, paid)
-LLM_BACKEND = os.getenv("LLM_BACKEND", "openrouter")
+LLM_BACKEND = os.getenv("LLM_BACKEND", "ollama")
 
 # Ollama model (used when LLM_BACKEND = "ollama")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 
 # OpenRouter model (used when LLM_BACKEND = "openrouter")
-OPENROUTER_SCRAPER_MODEL = os.getenv("OPENROUTER_SCRAPER_MODEL", "anthropic/claude-3-haiku")
+OPENROUTER_SCRAPER_MODEL = os.getenv("OPENROUTER_SCRAPER_MODEL", "meta-llama/llama-3.1-8b-instruct:free")
 
 # Chrome settings for Selenium
 CHROME_HEADLESS = os.getenv("CHROME_HEADLESS", "true").lower() == "true"

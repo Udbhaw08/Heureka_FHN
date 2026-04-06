@@ -73,15 +73,21 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
-# Configure CORS - Allow all origins for development
+# Configure CORS - Environment-based whitelisting
+_env = os.getenv("ENV", "development")
+if _env == "production":
+    _allowed_origins = os.getenv("CORS_ORIGINS", "").split(",")
+else:
+    _cors_extra = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+    _allowed_origins = ["http://localhost:5173", "http://127.0.0.1:5173"] + _cors_extra
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins (development only)
-    allow_credentials=False,  # Must be False when using wildcard origins
+    allow_origins=_allowed_origins,
+    allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
     expose_headers=["*"],
-    max_age=3600,  # Cache preflight for 1 hour
+    max_age=3600,
 )
 
 
@@ -180,11 +186,12 @@ if __name__ == "__main__":
     
     # Make port configurable via environment variable
     port = int(os.getenv("PORT", os.getenv("BACKEND_PORT", "8010")))
-    
+    env = os.getenv("ENV", "development")
+
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
         port=port,
-        reload=True,
+        reload=(env != "production"),
         log_level="info"
     )

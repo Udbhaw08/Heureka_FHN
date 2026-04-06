@@ -5,6 +5,11 @@ $env:PYTHONPATH="$PROJECT_ROOT\backend;$PROJECT_ROOT"
 $env:ZYND_REGISTRY_URL="https://registry.zynd.ai"
 $env:ZYND_WEBHOOK_HOST="127.0.0.1"
 $env:USE_ZYND="1"
+$env:LLM_BACKEND="ollama"
+$env:OLLAMA_MODEL="llama3.2"
+$env:LLM_MODEL="meta-llama/llama-3.1-8b-instruct:free"
+$env:OPENROUTER_MODEL="meta-llama/llama-3.1-8b-instruct:free"
+$env:OPENROUTER_SCRAPER_MODEL="meta-llama/llama-3.1-8b-instruct:free"
 
 # Automatically detect venv or system python
 $VENV_PY = "$PROJECT_ROOT\.venv\Scripts\python.exe"
@@ -34,6 +39,18 @@ foreach ($port in $ports) {
 
 Start-Sleep -s 3
 
+# Start Ollama if not already running (check via TCP port, not HTTP, to avoid false negatives)
+Write-Host "Checking Ollama..."
+$ollamaPort = Get-NetTCPConnection -LocalPort 11434 -State Listen -ErrorAction SilentlyContinue
+if (-not $ollamaPort) {
+    Write-Host "Starting Ollama server..."
+    Start-Process powershell -ArgumentList "-NoExit", "-Command", "& { `$Host.UI.RawUI.WindowTitle = 'OLLAMA SERVER'; ollama serve }" -WorkingDirectory $PROJECT_ROOT
+    Start-Sleep -s 5
+    Write-Host "Ollama started."
+} else {
+    Write-Host "Ollama already running on port 11434."
+}
+
 # Function to start a visible agent window with auto-hold on error
 function Start-VisibleAgent {
     param (
@@ -42,9 +59,7 @@ function Start-VisibleAgent {
         [string]$Port
     )
     Write-Host "Starting $Name ($Port)..."
-    # We launch a new PowerShell process that activates venv (if needed) and runs the module
-    # We use -NoExit so the window stays open if it crashes, allowing debugging
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", "& { `$env:PYTHONPATH='$PROJECT_ROOT\backend;$PROJECT_ROOT'; `$env:USE_ZYND='1'; `$Host.UI.RawUI.WindowTitle = '$Name ($Port)'; & '$PYTHON_CMD' -m $Command }" -WorkingDirectory $PROJECT_ROOT
+    Start-Process powershell -ArgumentList "-NoExit", "-Command", "& { `$env:PYTHONPATH='$PROJECT_ROOT\backend;$PROJECT_ROOT'; `$env:USE_ZYND='1'; `$env:LLM_BACKEND='ollama'; `$env:OLLAMA_MODEL='llama3.2'; `$env:LLM_MODEL='meta-llama/llama-3.1-8b-instruct:free'; `$env:OPENROUTER_MODEL='meta-llama/llama-3.1-8b-instruct:free'; `$env:OPENROUTER_SCRAPER_MODEL='meta-llama/llama-3.1-8b-instruct:free'; `$Host.UI.RawUI.WindowTitle = '$Name ($Port)'; & '$PYTHON_CMD' -m $Command }" -WorkingDirectory $PROJECT_ROOT
     Start-Sleep -s 3
 }
 
@@ -64,7 +79,6 @@ Start-VisibleAgent -Name "SKILL AGENT" -Command "zynd_integration.agents.skill_a
 
 # 5. ATS Agent
 Start-VisibleAgent -Name "ATS AGENT" -Command "zynd_integration.agents.ats_agent" -Port "5104"
-
 # 6. Passport Agent
 Start-VisibleAgent -Name "PASSPORT AGENT" -Command "zynd_integration.agents.passport_agent" -Port "5105"
 

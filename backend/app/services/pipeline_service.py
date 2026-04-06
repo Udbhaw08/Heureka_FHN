@@ -97,14 +97,6 @@ class PipelineService:
                 
         except Exception as e:
             logger.error(f"Pipeline exception for application {application_id}: {str(e)}", exc_info=True)
-            return {
-                "success": False,
-                "application_id": application_id,
-                "error": str(e)
-            }
-                
-        except Exception as e:
-            logger.error(f"Pipeline exception for application {application_id}: {str(e)}", exc_info=True)
             await self._update_application_status(
                 application_id,
                 ApplicationStatus.pending,

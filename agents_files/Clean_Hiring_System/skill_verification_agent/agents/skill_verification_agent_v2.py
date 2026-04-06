@@ -566,16 +566,21 @@ class SkillVerificationAgentV2:
         flags = []
         
         # Check for semantic flags (from ATS)
-        semantic_flags = ats_data.get("semantic_flags", [])
+        # Skip flags with no real issue description (placeholder/empty flags)
+        PLACEHOLDER_ISSUES = {"no issue specified", "none", "", None}
+        semantic_flags = [
+            f for f in ats_data.get("semantic_flags", [])
+            if str(f.get("issue", "") or "").lower().strip() not in PLACEHOLDER_ISSUES
+        ]
         if semantic_flags:
             manipulation_detected = True
             # Determine severity based on flag types
-            high_severity_types = ["timeline_overlap", "impossible_timeline"]
-            if any(flag.get("severity") == "high" for flag in semantic_flags):
+            high_severity_types = ["impossible_timeline"]  # timeline_overlap alone is not high severity
+            if any(flag.get("severity") == "high" and flag.get("type") in high_severity_types for flag in semantic_flags):
                 severity = "high"
-            elif any(flag.get("type") in high_severity_types for flag in semantic_flags):
+            elif any(flag.get("type") in ["timeline_overlap", "impossible_timeline"] for flag in semantic_flags):
                 severity = "medium"
-            
+
             flags = [f"{flag.get('type')}: {flag.get('issue')}" for flag in semantic_flags]
         
         # Determine action
