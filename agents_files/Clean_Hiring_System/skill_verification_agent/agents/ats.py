@@ -210,258 +210,28 @@ class ATSEvidenceAgent:
                     "evaluation_id": evaluation_id
                 }
 
-        # Stage -1: Security Checks (NEW)
+        # Stage -1: Security Checks (NEW - Modular ATS Guard)
+        from .ats_guard.ats_pipeline import run_ats_guard_v2
         
-        # 1. White Text Detection
-        if self.white_text_detector and pdf_bytes:
-            try:
-                white_text_check = self.white_text_detector.detect_white_text(pdf_bytes)
-                
-                if white_text_check["action"] == "immediate_blacklist":
-                    logger.warning("BLACKLISTED: White text detected")
-                    
-                    # Submit to Central Human Review Queue
-                    if self.human_review_service and evaluation_id:
-                        self.human_review_service.submit_review_request(
-                            candidate_id=candidate_email or evaluation_id,
-                            triggered_by="ats_security",
-                            severity="critical",
-                            reason="Critical white text manipulation detected",
-                            system_action_taken="blocked",
-                            evidence=white_text_check
-                        )
-                    
-                    return {
-                        "status": "BLACKLISTED",
-                        "reason": "White text manipulation detected",
-                        "evidence": white_text_check,
-                        "next_stage": "human_review"
-                    }
-                elif white_text_check["action"] in ["queue_for_review", "flag_for_review"]:
-                    logger.warning("FLAGGED: Suspicious white text detected")
-                    
-                    if self.human_review_service and evaluation_id:
-                        self.human_review_service.submit_review_request(
-                            candidate_id=candidate_email or evaluation_id,
-                            triggered_by="ats_security",
-                            severity=white_text_check.get("severity", "medium"),
-                            reason="Suspicious white text detected",
-                            system_action_taken="paused",
-                            evidence=white_text_check
-                        )
-
-                    # Return PENDING if severity is high enough to pause
-                    if white_text_check["action"] == "queue_for_review":
-                         return {
-                            "status": "PENDING_HUMAN_REVIEW",
-                            "reason": "Suspicious white text detected",
-                            "evidence": white_text_check,
-                            "next_stage": "human_review"
-                        }
-
-            except Exception as e:
-                logger.error(f"White text detection failed: {e}")
-
-        # Stage 0 skip logic - already handled above
-
-        # --- SECURITY & INTEGRITY CHECKS (Aggregated) ---
-        security_report = {
-            "white_text_detected": False,
-            "injection_detected": False,
-            "evasion_detected": False,
-            "severity": "none",
-            "action": "proceed",
-            "final_action": "proceed",
-            "details": {}
-        }
-
-        # 1. White Text Detection
-        if self.white_text_detector and pdf_bytes:
-            white_check = self.white_text_detector.detect_white_text(pdf_bytes)
-            if white_check.get("white_text_detected"):
-                security_report["white_text_detected"] = True
-                security_report["white_text_data"] = white_check
-                if white_check["severity"] == "critical":
-                    security_report["severity"] = "critical"
-                    security_report["action"] = "immediate_blacklist"
-                elif white_check["severity"] == "high" and security_report["severity"] != "critical":
-                    security_report["severity"] = "high"
-                    security_report["action"] = "queue_for_review"
-
-        # 2. Prompt Injection Detection (Regex)
-        injection_check = self.injection_scanner.scan(raw_text)
-        if injection_check.get("injection_detected"):
-            security_report["injection_detected"] = True
-            security_report["injection_data"] = injection_check
-            # Upgrade severity if needed
-            if injection_check["severity"] == "critical":
-                security_report["severity"] = "critical"
-                security_report["action"] = "immediate_blacklist"
-            elif injection_check["severity"] in ["high", "medium"] and security_report["severity"] != "critical":
-                 if security_report["severity"] != "high": # Don't downgrade
-                    security_report["severity"] = injection_check["severity"]
-                    security_report["action"] = injection_check["action"]
-
-        # 3. Dual-LLM Defense (High Latency - Only in Deep Check)
-        if self.dual_llm_defender and deep_check:
-            dual_check = self.dual_llm_defender.inspect_for_injection(raw_text)
-            if not dual_check.get("safe", True):
-                security_report["injection_detected"] = True # Consolidated
-                security_report["dual_llm_data"] = dual_check
-                
-                # Update security report based on detected action
-                # If cloud fails, it returns manual_review instead of immediate_blacklist
-                security_report["action"] = dual_check.get("action", "manual_review")
-                security_report["severity"] = "critical" if security_report["action"] == "immediate_blacklist" else "high"
-                
-                # Narrative Analysis Mapping (User Requirement)
-                security_report["narrative_analysis"] = {
-                    "suspicious_semantic_patterns": True,
-                    "professional_language_mask": True,
-                    "confidence": "medium",
-                    "details": [{
-                        "detected": True,
-                        "type": dual_check.get("attack_type", "semantic_injection"),
-                        "severity": "medium",
-                        "patterns_matched": dual_check.get("suspicious_segments", []),
-                        "match_count": len(dual_check.get("suspicious_segments", [])),
-                        "action": "flag_for_review"
-                    }]
-                }
-
-        # 4. Phase 8: Evasion Detection (Semantic/CSS - Only in Deep Check)
-        if self.evasion_detector and deep_check:
-            # Try to read raw file bytes for CSS/Stego check
-            raw_file_content = ""
-            try:
-                with open(pdf_path, 'r', encoding='utf-8', errors='ignore') as f:
-                    raw_file_content = f.read()
-            except:
-                pass # Binary file
-                
-            evasion_check = self.evasion_detector.analyze(raw_text, raw_file_content)
-            
-            if evasion_check["evasion_detected"]:
-                security_report["evasion_detected"] = True
-                security_report["narrative_analysis"] = {
-                    "suspicious_semantic_patterns": any(d['type'] == 'semantic_injection' for d in evasion_check['details']),
-                    "professional_language_mask": True, # Inferred from detection
-                    "confidence": "medium", # Can be refined
-                    "details": evasion_check["details"]
-                }
-                
-                # Update severity but don't override Critical Blacklist
-                if security_report["severity"] != "critical":
-                    if evasion_check["max_severity"] == "high":
-                         security_report["severity"] = "high"
-                         security_report["action"] = "queue_for_review"
-                    elif evasion_check["max_severity"] == "medium" and security_report["severity"] == "none":
-                         security_report["severity"] = "medium"
-                         security_report["action"] = "flag_for_review"
-
-        # --- DECISION LOGIC ---
+        security = run_ats_guard_v2(pdf_path, raw_text)
         
-        # Construct User-Friendly Report Format (as requested)
-        # Format: flat structure with all detection details at top level
-        final_output = {
-            # White Text Detection
-            "white_text_detected": security_report.get("white_text_detected", False),
-            "hidden_word_count": 0,
-            "suspicious_matches": [],
+        if security["action"] == "BLOCKED":
+            return {
+                "action": "BLOCKED",
+                "reason": "Security threat detected in resume",
+                "severity": "critical",
+                "guard_analysis": security["guard_analysis"]
+            }
             
-            # Injection Detection
-            "injection_detected": security_report.get("injection_detected", False),
-            "patterns_matched": [],
-            "match_count": 0,
+        if security["action"] == "NEEDS_REVIEW":
+            return {
+                "action": "NEEDS_REVIEW",
+                "reason": "Suspicious patterns detected",
+                "severity": "medium",
+                "guard_analysis": security["guard_analysis"]
+            }
             
-            # Severity & Action
-            "severity": security_report.get("severity", "none"),
-            "action": security_report.get("action", "proceed"),
-            
-            # Narrative Analysis
-            "narrative_analysis": security_report.get("narrative_analysis", {}),
-            
-            # Final Decision
-            "final_action": "PROCESSED",
-            "human_review_reason": ""
-        }
-        
-        # Fill in specific details from white text detection
-        if "white_text_data" in security_report:
-            wt = security_report["white_text_data"]
-            final_output["hidden_word_count"] = wt.get("hidden_word_count", 0)
-            final_output["suspicious_matches"] = wt.get("suspicious_matches", [])
-            
-        # Fill in specific details from injection detection
-        if "injection_data" in security_report:
-            inj = security_report["injection_data"]
-            final_output["patterns_matched"] = inj.get("patterns_matched", [])
-            final_output["match_count"] = inj.get("match_count", 0)
-
-        # Execute Actions
-        if security_report["action"] == "immediate_blacklist":
-             logger.warning(f"BLACKLISTED: Security violation in {pdf_path}")
-             final_output["final_action"] = "BLACKLISTED"
-             final_output["human_review_reason"] = "Critical security violation detected. Resume contains hidden manipulation layers."
-             
-             if self.human_review_service and evaluation_id:
-                  review_id = self.human_review_service.submit_review_request(
-                      candidate_id=candidate_email or evaluation_id,
-                      triggered_by="ats_security",
-                      severity="critical",
-                      reason="Security violation aggregate (blacklist)",
-                      system_action_taken="blocked",
-                      evidence=final_output
-                  )
-                  final_output["human_review_status"] = "SUBMITTED"
-                  final_output["human_review_id"] = review_id
-                  logger.info(f"Human Review Submitted: {review_id}")
-
-             return final_output
-
-        elif security_report["action"] in ["queue_for_review", "flag_for_review"]:
-             logger.warning(f"FLAGGED: Suspicious content in {pdf_path}")
-             final_output["final_action"] = "PENDING_HUMAN_REVIEW"
-             
-             # Build sophisticated human review reason
-             reasons = []
-             if final_output["white_text_detected"]:
-                 reasons.append("hidden white text")
-             if final_output["injection_detected"]:
-                 reasons.append("prompt injection patterns")
-             if final_output.get("narrative_analysis", {}).get("suspicious_semantic_patterns"):
-                 reasons.append("semantic evasion patterns")
-             
-             if len(reasons) > 1:
-                 final_output["human_review_reason"] = f"Sophisticated multi-layer attack detected ({', '.join(reasons)}). Resume appears legitimate on surface but contains hidden manipulation layers. Requires expert review."
-             else:
-                 final_output["human_review_reason"] = f"Suspicious activity ({security_report['severity']}) detected. Requires expert review."
-             
-             if self.human_review_service and evaluation_id:
-                  review_id = self.human_review_service.submit_review_request(
-                      candidate_id=candidate_email or evaluation_id,
-                      triggered_by="ats_security",
-                      severity=security_report["severity"],
-                      reason=final_output["human_review_reason"],
-                      system_action_taken="paused",
-                      evidence=final_output
-                  )
-                  final_output["human_review_status"] = "SUBMITTED"
-                  final_output["human_review_id"] = review_id
-             
-             if security_report["action"] == "queue_for_review":
-                 return final_output
-        
-        # If we proceeded, we still might want to attach this security report to the final output
-        # But method expects 'status', 'reason' etc keys usually. 
-        # The user wants "json{...}" format. 
-        # I will attach `security_metadata` to the standard output or return this if it was a check-only mode.
-        # Given the previous code, users expect specific keys. I should ensure I don't break downstream if it passes.
-        
-        # If passes, we continue to Stage 2 (LLM Extraction). 
-        # But we verify_david_chen checks for the output.
-        # I'll store this report to merge later.
-        self.last_security_report = final_output
+        self.last_security_report = security
         
         # Stage 1: FAST Segmentation (regex, no LLM) - ~5ms
         segments = self._fast_segment(raw_text)

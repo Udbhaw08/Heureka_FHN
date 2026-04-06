@@ -85,14 +85,21 @@ class PipelineService:
             )
             
             # Extract match results for backward compatibility with router response
-            match_score = state.get("evidence", {}).get("matching", {}).get("match_score", 0)
-            
-            logger.info(f"Pipeline completed via Orchestrator for application {application_id}")
+            if not isinstance(state, dict):
+                state = {}
+            evidence = state.get("evidence") or {}
+            matching = evidence.get("matching") or {}
+            match_score = matching.get("match_score", 0)
+            pipeline_status = state.get("pipeline_status", "unknown")
+
+            logger.info(f"Pipeline completed via Orchestrator for application {application_id}. Status: {pipeline_status}")
             return {
                 "success": True,
                 "application_id": application_id,
                 "state": state,
-                "match_score": match_score
+                "credential": state,
+                "match_score": match_score,
+                "pipeline_status": pipeline_status
             }
                 
         except Exception as e:

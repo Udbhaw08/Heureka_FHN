@@ -894,5 +894,121 @@
     "human_decision": null,
     "reviewer_notes": null,
     "timestamp": "2026-04-05T04:16:32.709739Z"
+  },
+  {
+    "review_id": "review_d59e5e",
+    "candidate_id": "21",
+    "job_id": "unknown_job",
+    "triggered_by": "ats_security",
+    "severity": "critical",
+    "reason": "Security violation aggregate (blacklist)",
+    "evidence": {
+      "white_text_detected": false,
+      "hidden_word_count": 0,
+      "suspicious_matches": [],
+      "injection_detected": true,
+      "patterns_matched": [
+        "<<<SYSTEM>>>",
+        "<<<END_SYSTEM>>>"
+      ],
+      "match_count": 2,
+      "severity": "critical",
+      "action": "immediate_blacklist",
+      "narrative_analysis": {},
+      "final_action": "BLACKLISTED",
+      "human_review_reason": "Critical security violation detected. Resume contains hidden manipulation layers."
+    },
+    "system_action_taken": "blocked",
+    "status": "PENDING",
+    "human_decision": null,
+    "reviewer_notes": null,
+    "timestamp": "2026-04-06T09:18:54.348896Z"
+  },
+  {
+    "review_id": "review_cac59d",
+    "candidate_id": "22",
+    "job_id": "unknown_job",
+    "triggered_by": "ats_security",
+    "severity": "critical",
+    "reason": "Security violation aggregate (blacklist)",
+    "evidence": {
+      "white_text_detected": false,
+      "hidden_word_count": 0,
+      "suspicious_matches": [],
+      "injection_detected": true,
+      "patterns_matched": [
+        "<<<SYSTEM>>>",
+        "<<<END_SYSTEM>>>"
+      ],
+      "match_count": 2,
+      "severity": "critical",
+      "action": "immediate_blacklist",
+      "narrative_analysis": {},
+      "final_action": "BLACKLISTED",
+      "human_review_reason": "Critical security violation detected. Resume contains hidden manipulation layers."
+    },
+    "system_action_taken": "blocked",
+    "status": "PENDING",
+    "human_decision": null,
+    "reviewer_notes": null,
+    "timestamp": "2026-04-06T09:39:47.114054Z"
+  },
+  {
+    "review_id": "review_e4ad03",
+    "candidate_id": "23",
+    "job_id": "unknown_job",
+    "triggered_by": "ats_security",
+    "severity": "critical",
+    "reason": "Security violation aggregate (blacklist)",
+    "evidence": {
+      "white_text_detected": false,
+      "hidden_word_count": 0,
+      "suspicious_matches": [],
+      "injection_detected": true,
+      "patterns_matched": [
+        "[INST]",
+        "[/INST]"
+      ],
+      "match_count": 2,
+      "severity": "critical",
+      "action": "immediate_blacklist",
+      "narrative_analysis": {},
+      "final_action": "BLACKLISTED",
+      "human_review_reason": "Critical security violation detected. Resume contains hidden manipulation layers."
+    },
+    "system_action_taken": "blocked",
+    "status": "PENDING",
+    "human_decision": null,
+    "reviewer_notes": null,
+    "timestamp": "2026-04-06T09:45:11.002675Z"
+  },
+  {
+    "review_id": "review_19ac6b",
+    "candidate_id": "24",
+    "job_id": "unknown_job",
+    "triggered_by": "ats_security",
+    "severity": "critical",
+    "reason": "Security violation aggregate (blacklist)",
+    "evidence": {
+      "white_text_detected": false,
+      "hidden_word_count": 0,
+      "suspicious_matches": [],
+      "injection_detected": true,
+      "patterns_matched": [
+        "[INST]",
+        "[/INST]"
+      ],
+      "match_count": 2,
+      "severity": "critical",
+      "action": "immediate_blacklist",
+      "narrative_analysis": {},
+      "final_action": "BLACKLISTED",
+      "human_review_reason": "Critical security violation detected. Resume contains hidden manipulation layers."
+    },
+    "system_action_taken": "blocked",
+    "status": "PENDING",
+    "human_decision": null,
+    "reviewer_notes": null,
+    "timestamp": "2026-04-06T09:55:20.763180Z"
   }
 ]

@@ -91,3 +91,28 @@ def run_ats_guard(pdf_path: str, github_age_years: float = None) -> dict:
     logger.info(f"ATS Guard Decision: {decision['security_status']} (trust: {decision['trust_score']})")
     
     return decision
+
+from .guards import run_all_guards
+from .utils.scoring import compute_risk_score
+
+def run_ats_guard_v2(pdf_path, extracted_text):
+    guard_results = run_all_guards(pdf_path, extracted_text)
+
+    risk_score = compute_risk_score(guard_results)
+
+    # Final Decision (MULTI-SIGNAL)
+    if risk_score >= 0.85:
+        action = "BLOCKED"
+    elif risk_score >= 0.5:
+        action = "NEEDS_REVIEW"
+    else:
+        action = "ALLOW"
+
+    # Convert to structured dict
+    guard_analysis = {g["type"]: g for g in guard_results}
+
+    return {
+        "action": action,
+        "risk_score": risk_score,
+        "guard_analysis": guard_analysis
+    }

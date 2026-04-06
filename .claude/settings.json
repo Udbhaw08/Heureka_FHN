@@ -4,7 +4,11 @@
       "Bash(powershell -Command \"Test-NetConnection -ComputerName 192.168.87.24 -Port 8012\")",
       "Bash(powershell -Command \"Get-NetAdapter | Select-Object Name, Status, InterfaceDescription\")",
       "Bash(powershell -Command \"Test-NetConnection -ComputerName 10.208.108.106 -Port 5173\")",
-      "Bash(powershell -Command \"Test-NetConnection -ComputerName 10.208.108.106 -Port 8012\")"
+      "Bash(powershell -Command \"Test-NetConnection -ComputerName 10.208.108.106 -Port 8012\")",
+      "Read(//c/Users/udbha/.claude/projects/c--Users-udbha-Desktop-HEUREKA-ACEHACK/memory/**)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\udbha\\.claude\\projects\\c--Users-udbha-Desktop-HEUREKA-ACEHACK\\memory"
     ]
   }
 }

@@ -86,16 +86,12 @@ export default function ReviewerExperience({ onExit }) {
     useEffect(() => {
         (async () => {
             try {
-                if (companyId) {
-                    const data = await api.reviewQueue(companyId);
-                    setQueue(Array.isArray(data) ? data : []);
-                    setIsPreview(false);
-                } else {
-                    setQueue([]);
-                    setIsPreview(false);
-                }
+                // companyId is optional — global reviewer queue works without it
+                const data = await api.reviewQueue(companyId || null);
+                setQueue(Array.isArray(data) ? data : []);
+                setIsPreview(false);
             } catch (e) {
-                console.warn("Failed to load review queue");
+                console.warn("Failed to load review queue", e);
                 setQueue([]);
                 setIsPreview(false);
             } finally {
@@ -118,11 +114,11 @@ export default function ReviewerExperience({ onExit }) {
                 await new Promise(r => setTimeout(r, 800));
                 setQueue(prev => prev.filter(c => c.id !== selectedCase.id));
             } else {
-                await api.reviewAction(companyId, selectedCase.id, {
+                await api.reviewAction(companyId || null, selectedCase.id, {
                     action,
                     note: `${action === 'clear' ? 'Cleared' : 'Blacklisted'} by reviewer via UI`
                 });
-                const data = await api.reviewQueue(companyId);
+                const data = await api.reviewQueue(companyId || null);
                 setQueue(Array.isArray(data) ? data : []);
             }
             setSelectedCase(null);

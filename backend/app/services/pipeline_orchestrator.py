@@ -266,38 +266,75 @@ class PipelineOrchestrator:
                 try:
                     ats_result = await self.call_agent("ATS", "/webhook/sync", ats_input)
                     duration = (datetime.now() - start_time).total_seconds() * 1000
-                    
-                    # DEBUG: Log ATS output to find missing skills
-                    skills_found = ats_result.get("skills", [])
+
+                    # agent_client wraps response: { "success": bool, "data": {...}, "status_code": int }
+                    # The actual ATS payload lives inside "data"
+                    ats_data = ats_result.get("data", ats_result)
+
+                    # DEBUG: Log ATS output
+                    skills_found = ats_data.get("skills", [])
                     log.info(f"[PIPELINE-DEBUG] ATS Stage Complete. Skills found: {len(skills_found)}")
                     if skills_found:
                         log.info(f"[PIPELINE-DEBUG] First 3 skills: {skills_found[:3]}")
                     else:
                         log.warning(f"[PIPELINE-DEBUG] ATS returned NO SKILLS. Check extraction logic.")
-                        if "evidence" in ats_result:
-                            log.info(f"[PIPELINE-DEBUG] ATS Evidence keys: {list(ats_result['evidence'].keys())}")
-                    
-                    run.output_payload = ats_result
+                        if "evidence" in ats_data:
+                            log.info(f"[PIPELINE-DEBUG] ATS Evidence keys: {list(ats_data['evidence'].keys())}")
+
+                    run.output_payload = ats_data
                     run.status = AgentRunStatus.completed
                     run.execution_time_ms = duration
-                    
-                    self.state["evidence"]["ats"] = ats_result
+
+                    self.state["evidence"]["ats"] = ats_data
                     self.state["stage_runs"][stage].update({
                         "status": "ok",
                         "ended_at": datetime.now(timezone.utc).isoformat(),
                         "duration_ms": duration,
                         "output_ref": "evidence.ats"
                     })
-                    
+
                     # Check for blacklist/rejection (from Guard OR legacy LLM)
-                    legacy_action = ats_result.get("evidence", {}).get("final_action", "")
-                    if ats_result.get("action") in ["BLACKLIST", "REJECTED"] or legacy_action in ["blacklist", "BLACKLIST", "BLACKLISTED", "rejected", "REJECTED"]:
-                        log.warning(f"[PIPELINE] ATS blacklisted application {application_id}")
-                        
+                    # Read from ats_data (unwrapped), not the outer wrapper
+                    action = ats_data.get("action", "")
+                    legacy_action = ats_data.get("evidence", {}).get("final_action", "") if isinstance(ats_data.get("evidence"), dict) else ""
+
+                    if action in ["BLACKLIST", "REJECTED"] or legacy_action in ["blacklist", "BLACKLIST", "BLACKLISTED", "rejected", "REJECTED"]:
+                        log.warning(f"[PIPELINE] ATS blacklisted application {application_id}. Action={action}")
+
+                        # Build human-readable fraud reason listing detected attack types
+                        fraud_flags = ats_data.get("flags", [])
+                        manipulation_patterns = ats_data.get("manipulation_signals", {}).get("patterns", [])
+                        all_flags = list(set(fraud_flags + manipulation_patterns))
+
+                        flag_descriptions = []
+                        for f in all_flags:
+                            if "white_text" in f.lower():
+                                flag_descriptions.append("white hidden text")
+                            elif "injection" in f.lower() or "prompt" in f.lower():
+                                flag_descriptions.append("prompt injection")
+                            elif "fraud" in f.lower() or "manipulation" in f.lower():
+                                flag_descriptions.append("resume manipulation/fraud")
+                            elif "bot" in f.lower() or "generated" in f.lower():
+                                flag_descriptions.append("AI-generated content")
+                            elif "invisible" in f.lower() or "hidden" in f.lower():
+                                flag_descriptions.append("hidden content layer")
+                            else:
+                                flag_descriptions.append(f)
+
+                        # Deduplicate and build reason string
+                        unique_descriptions = list(dict.fromkeys(flag_descriptions))
+                        base_reason = ats_data.get("reason", ats_data.get("fraud_reason", ""))
+                        if unique_descriptions:
+                            fraud_reason = f"Resume rejected: detected {', '.join(unique_descriptions)}."
+                            if base_reason:
+                                fraud_reason += f" Detail: {base_reason}"
+                        else:
+                            fraud_reason = base_reason or ats_data.get("evidence", {}).get("human_review_reason", "ATS fraud detection")
+
                         # Blacklist candidate
                         blacklist = Blacklist(
                             candidate_id=app.candidate_id,
-                            reason=ats_result.get("reason", ats_result.get("evidence", {}).get("human_review_reason", "ATS fraud detection"))
+                            reason=fraud_reason
                         )
                         self.db.add(blacklist)
 
@@ -308,47 +345,49 @@ class PipelineOrchestrator:
                             candidate_id=app.candidate_id,
                             triggered_by=stage,
                             severity="critical",
-                            reason=ats_result.get("reason", ats_result.get("evidence", {}).get("human_review_reason", "ATS fraud detection")),
-                            evidence=ats_result
+                            reason=fraud_reason,
+                            evidence=ats_data
                         )
                         self.db.add(review)
-                        
+
                         app.status = ApplicationStatus.rejected
                         app.pipeline_status = PipelineStatus.failed
+                        app.pipeline_error = fraud_reason
                         self.state["pipeline_status"] = "rejected"
-                        
+                        self.state["blacklist_reason"] = fraud_reason
+                        self.state["blacklist_flags"] = unique_descriptions
+
                         await self.db.commit()
                         self.state["updated_at"] = datetime.now(timezone.utc).isoformat()
                         await self.save_credential_state(application_id, self.state)
-                        
+
+                        log.warning(f"[PIPELINE] Pipeline STOPPED. Reason: {fraud_reason}")
                         return self.state
-                    
+
                     # Check for review
-                    if ats_result.get("action") in ["NEEDS_REVIEW", "REVIEW"] or legacy_action in ["review", "REVIEW", "PENDING_HUMAN_REVIEW", "NEEDS_REVIEW"]:
+                    if action in ["NEEDS_REVIEW", "REVIEW"] or legacy_action in ["review", "REVIEW", "PENDING_HUMAN_REVIEW", "NEEDS_REVIEW"]:
                         log.info(f"[PIPELINE] ATS flagged application {application_id} for review")
-                        
+
                         review = ReviewCase(
                             application_id=application_id,
                             job_id=app.job_id,
                             candidate_id=app.candidate_id,
                             triggered_by=stage,
-                            severity=ats_result.get("severity", "medium"),
-                            reason=ats_result.get("reason", "ATS flagged for review"),
-                            evidence=ats_result
+                            severity=ats_data.get("severity", "medium"),
+                            reason=ats_data.get("reason", "ATS flagged for review"),
+                            evidence=ats_data
                         )
                         self.db.add(review)
-                        
-                        # Important: Don't set app.status to Match score yet
-                        # We pause here
-                        app.pipeline_status = PipelineStatus.completed # It finished its part for now
+
+                        app.pipeline_status = PipelineStatus.completed
                         self.state["pipeline_status"] = "needs_review"
-                        
+
                         await self.db.commit()
                         self.state["updated_at"] = datetime.now(timezone.utc).isoformat()
                         await self.save_credential_state(application_id, self.state)
-                        
+
                         return self.state
-                    
+
                     self.state["stages_completed"].append(stage)
                     
                 except Exception as e:

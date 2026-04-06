@@ -469,3 +469,102 @@ async def review_action(company_id: str, case_id: int, payload: dict, db: AsyncS
     await db.commit()
     await log_event(db, "company", "review_action", {"case_id": case_id, "action": action})
     return {"ok": True}
+
+
+@router.get("/reviewer/queue")
+async def global_review_queue(db: AsyncSession = Depends(get_db)):
+    """Global review queue for the reviewer role — returns all pending cases across all companies."""
+    q = await db.execute(
+        select(ReviewCase, Candidate, Application, Job)
+        .join(Application, ReviewCase.application_id == Application.id)
+        .join(Job, Application.job_id == Job.id)
+        .join(Candidate, ReviewCase.candidate_id == Candidate.id)
+        .where(ReviewCase.status == "pending")
+        .order_by(ReviewCase.created_at.desc())
+    )
+    rows = q.all()
+    out = []
+    for rc, cand, app, job in rows:
+        cred_q = await db.execute(
+            select(Credential)
+            .where(Credential.application_id == rc.application_id)
+            .order_by(Credential.issued_at.desc())
+        )
+        cred = cred_q.scalars().first()
+        cred_json = cred.credential_json if cred else {}
+
+        derived = cred_json.get("derived", {}) if isinstance(cred_json, dict) else {}
+        verified_skills = derived.get("verified_skills", {})
+
+        flat_skills = []
+        if isinstance(verified_skills, dict):
+            for tier, skills in verified_skills.items():
+                for s in skills:
+                    name = s.get("name", s) if isinstance(s, dict) else s
+                    flat_skills.append(name)
+        elif isinstance(verified_skills, list):
+            flat_skills = [s.get("name", s) if isinstance(s, dict) else s for s in verified_skills]
+
+        evidence_data = cred_json.get("evidence", {}) if isinstance(cred_json, dict) else {}
+        evidence_sources = [str(k).upper() for k in evidence_data.keys() if evidence_data.get(k)]
+
+        # Build fraud flags list from ATS evidence for display
+        ats_evidence = rc.evidence or {}
+        fraud_flags = ats_evidence.get("flags", []) + ats_evidence.get("manipulation_signals", {}).get("patterns", []) if isinstance(ats_evidence, dict) else []
+
+        out.append({
+            "id": rc.id,
+            "application_id": rc.application_id,
+            "job_id": rc.job_id,
+            "role": job.title,
+            "company_name": job.company_id,
+            "candidate_anon_id": cand.anon_id,
+            "candidate_name": cand.name,
+            "candidate_email": cand.email,
+            "severity": rc.severity,
+            "reason": rc.reason,
+            "status": rc.status,
+            "created_at": rc.created_at.isoformat(),
+            "triggered_by": rc.triggered_by,
+            "evidence_json": rc.evidence,
+            "fraud_flags": list(set(fraud_flags)),
+            "skills": flat_skills,
+            "evidence_sources": evidence_sources,
+            "confidence": derived.get("confidence", 0),
+            "match_score": derived.get("match_score", 0),
+            "feedback": app.feedback_json,
+        })
+    return out
+
+
+@router.post("/reviewer/queue/{case_id}/action")
+async def global_review_action(case_id: int, payload: dict, db: AsyncSession = Depends(get_db)):
+    """Reviewer action on any case — no company scoping needed."""
+    action = payload.get("action")
+    note = payload.get("note") or ""
+
+    q = await db.execute(select(ReviewCase).where(ReviewCase.id == case_id))
+    rc = q.scalar_one_or_none()
+    if not rc:
+        raise HTTPException(status_code=404, detail="Case not found")
+
+    if action == "clear":
+        rc.status = "cleared"
+        qa = await db.execute(select(Application).where(Application.id == rc.application_id))
+        app = qa.scalar_one_or_none()
+        if app and app.status == "needs_review":
+            app.status = "verified"
+    elif action == "blacklist":
+        rc.status = "blacklisted"
+        qa = await db.execute(select(Application).where(Application.id == rc.application_id))
+        app = qa.scalar_one_or_none()
+        if app:
+            app.status = "rejected"
+        qb = await db.execute(select(Blacklist).where(Blacklist.candidate_id == rc.candidate_id))
+        if not qb.scalar_one_or_none():
+            db.add(Blacklist(candidate_id=rc.candidate_id, reason=note or rc.reason))
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action. Use clear|blacklist")
+
+    await db.commit()
+    return {"ok": True}

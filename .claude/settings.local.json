@@ -10,7 +10,8 @@
       "Bash(git -C \"C:\\\\Users\\\\udbha\\\\Desktop\\\\HEUREKA_ACEHACK\" ls-files --others)",
       "Bash(grep -E \"\\\\.env$\")",
       "Bash(curl -s http://localhost:11434/api/tags)",
-      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(m['name']\\) for m in d.get\\('models',[]\\)]\")"
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(m['name']\\) for m in d.get\\('models',[]\\)]\")",
+      "Bash(curl:*)"
     ]
   }
 }

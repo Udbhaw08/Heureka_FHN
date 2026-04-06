@@ -583,7 +583,11 @@ export default function CandidateApply({ roleId, roleData: propRoleData, onExit,
                                     {step === 'success' ? 'MATCH CONFIRMED' : step === 'rejected' ? 'REJECTED' : 'SYSTEM ERROR'}
                                 </h2>
                                 <p className="font-grotesk text-sm font-black opacity-40 uppercase tracking-[0.3em]">
-                                    {step === 'success' ? 'Identity verified. Credentials issued.' : step === 'rejected' ? 'Application did not meet system thresholds.' : 'An internal processing error occurred.'}
+                                    {step === 'success'
+                                        ? 'Identity verified. Credentials issued.'
+                                        : step === 'rejected'
+                                            ? (pipelineStatus?.pipeline_error || 'Application did not meet system thresholds.')
+                                            : 'An internal processing error occurred.'}
                                 </p>
                                 <button
                                     onClick={onComplete}

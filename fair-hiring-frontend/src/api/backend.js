@@ -106,12 +106,19 @@ export const api = {
   listSelected: (companyId, jobId) =>
     request(`/company/${companyId}/jobs/${jobId}/selected`, { method: "GET" }),
   reviewQueue: (companyId) =>
-    request(`/company/${companyId}/review-queue`, { method: "GET" }),
+    companyId
+      ? request(`/company/${companyId}/review-queue`, { method: "GET" })
+      : request(`/company/reviewer/queue`, { method: "GET" }),
   reviewAction: (companyId, caseId, payload) =>
-    request(`/company/${companyId}/review-queue/${caseId}/action`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
+    companyId
+      ? request(`/company/${companyId}/review-queue/${caseId}/action`, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        })
+      : request(`/company/reviewer/queue/${caseId}/action`, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        }),
 
   // Passport
   getPassport: (anonId) =>
