@@ -73,18 +73,20 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
-# Configure CORS - Environment-based whitelisting
+# Configure CORS
 _env = os.getenv("ENV", "development")
 if _env == "production":
     _allowed_origins = os.getenv("CORS_ORIGINS", "").split(",")
+    allow_origins = _allowed_origins
 else:
-    _cors_extra = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
-    _allowed_origins = ["http://localhost:5173", "http://127.0.0.1:5173"] + _cors_extra
+    # Allow all origins in development to support network IPs during demos
+    allow_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_allowed_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
     max_age=3600,

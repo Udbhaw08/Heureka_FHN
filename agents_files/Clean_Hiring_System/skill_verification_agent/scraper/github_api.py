@@ -23,10 +23,14 @@ from collections import Counter, defaultdict
 # Handle imports for both module and standalone usage
 try:
     from .framework_detector import FrameworkDetector
-except ImportError:
-    # Running as standalone script
+    from learning.github_skill_learner import GithubSkillLearner
+    from learning.ontology_updater import OntologyUpdater
+except (ImportError, ModuleNotFoundError):
+    # Running as standalone script or in sub-module
     sys.path.insert(0, str(Path(__file__).parent.parent))
     from scraper.framework_detector import FrameworkDetector
+    from learning.github_skill_learner import GithubSkillLearner
+    from learning.ontology_updater import OntologyUpdater
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -67,6 +71,12 @@ class GitHubAPIClient:
         
         self.rate_limit_remaining = None
         self.framework_detector = FrameworkDetector()
+        
+        # Auto-Learning Engine
+        self.skill_learner = GithubSkillLearner()
+        # Ensure ontology path is correct ( sibling to scraper/ )
+        ontology_path = Path(__file__).parent.parent / "knowledge" / "skill_ontology.json"
+        self.ontology_updater = OntologyUpdater(str(ontology_path))
     
     
     def _request(self, endpoint: str, params: Dict = None) -> Optional[Dict]:
@@ -230,6 +240,22 @@ class GitHubAPIClient:
                                 skill_evidence[skill]["files"].add(file["path"])
                             
                             scanned_count += 1
+                            
+                            # --- NEW: Auto-Learning Integration ---
+                            # Extract all raw imports for the learner
+                            raw_imports = self.skill_learner.extract_imports(content, language)
+                            # Map to framework candidates
+                            framework_candidates = self.skill_learner.detect_framework_candidates(raw_imports)
+                            # Get the current ontology (cached state)
+                            # For simplicity we load it inside the updater
+                            ontology = self.ontology_updater.load_ontology()
+                            # Filter for new ones
+                            new_frameworks = self.skill_learner.filter_new_frameworks(framework_candidates, ontology)
+                            
+                            if new_frameworks:
+                                # Auto-update the ontology
+                                self.ontology_updater.update_with_new_frameworks(new_frameworks, language)
+                                
                             if scanned_count >= 15: break
         
         # Convert to final format

@@ -9,10 +9,11 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 class JobExtractionAgent:
-    def __init__(self, model_name="anthropic/claude-3.5-sonnet"):
-        """Initializes the agent with OpenRouter intelligence (Claude)."""
+    def __init__(self, model_name=None):
+        """Initializes the agent with OpenRouter intelligence."""
         api_key = os.getenv("OPENAI_API_KEY")
         base_url = "https://openrouter.ai/api/v1"
+        model_to_use = model_name or os.getenv("LLM_MODEL", "anthropic/claude-3-haiku")
         
         if not api_key or "placeholder" in api_key.lower():
             print("[WARN] JobExtractionAgent: No valid API key found. Using MOCK mode.")
@@ -20,7 +21,7 @@ class JobExtractionAgent:
             return
 
         self.model = ChatOpenAI(
-            model=model_name,
+            model=model_to_use,
             openai_api_key=api_key,
             openai_api_base=base_url,
             temperature=0,
@@ -34,34 +35,35 @@ class JobExtractionAgent:
             "You are a master technical intelligence agent. Your mission is to extract structured intent from a job description (JD) for a high-precision matching engine."
             
             "\n\n--- EXTRACTION RULES ---"
-            "\n1. CANONICAL NORMALIZATION: All skills and requirements MUST be canonical tech terms (e.g., 'React', not 'React or similar'). No vague phrases like 'One additional language' or 'Deep knowledge'."
-            "\n2. BUCKETED TAXONOMY: Split skills strictly into: 'languages', 'web_fundamentals', 'frontend_frameworks', 'backend_frameworks', 'security_concepts', 'databases', 'backend_concepts', 'infrastructure_concepts' (Queues, Workers), and 'developer_tools' (Git, CI/CD)."
+            "\n1. CANONICAL NORMALIZATION: All skills and requirements MUST be canonical tech terms (e.g., 'YOLOv8', not 'YOLO-based'). No vague phrases like 'One additional language' or 'Deep knowledge'."
+            "\n2. BUCKETED TAXONOMY: Split skills into the categories below. If a skill doesn't fit any specific bucket, put it in 'domain_specific_skills'."
             "\n3. MANDATORY VS OPTIONAL: Problem-solving platforms (LeetCode/CP) are ONLY 'required: true' if the JD says 'Must have' or 'Required'. If 'A plus' or 'Preferred', set 'required: false'."
             "\n4. VELOCITY TUNING: 'learning_velocity_weight' MUST be between 0.1 and 0.3. Never exceed 0.3 unless it's a dedicated internship/training role."
-            "\n5. NO REDUNDANCY: Do NOT generate a 'required_skills' field. Rely on granular buckets."
+            "\n5. COMPLETENESS: Extract ALL explicitly mentioned technologies, tools, frameworks, and libraries from the JD. Do NOT skip any skill that is named. Include both 'Required' and 'Good to have' skills."
+            "\n6. strict_requirements MUST list ALL skills marked as 'Required' in the JD. soft_requirements MUST list ALL 'Good to have' / 'Nice to have' / 'Bonus' skills."
             
             "\n\n--- OUTPUT SCHEMA (JSON ONLY) ---"
             "\n{{"
             "\n  \"role\": \"Role Title\","
             "\n  \"seniority\": \"junior|junior-mid|mid|senior\","
             "\n  \"seniority_flexibility\": true/false,"
-            "\n  \"languages\": [\"JavaScript\", \"TypeScript\", ...],"
-            "\n  \"web_fundamentals\": [\"HTML\", \"CSS\", ...],"
-            "\n  \"frontend_frameworks\": [\"React\", ...],"
-            "\n  \"backend_frameworks\": [\"Node.js\", ...],"
-            "\n  \"security_concepts\": [\"Authentication\", \"Authorization\"],"
-            "\n  \"databases\": [\"PostgreSQL\", ...],"
-            "\n  \"backend_concepts\": [\"API Design\", \"Data Modeling\"],"
-            "\n  \"infrastructure_concepts\": [\"Message Queues\", \"Background Workers\"],"
-            "\n  \"developer_tools\": [\"Git\", \"Docker\", ...],"
-            "\n  \"problem_solving\": {{ \"required\": true/false, \"signals\": [\"LeetCode\", \"Codeforces\"] }},"
+            "\n  \"languages\": [\"Python\", \"C++\", ...],"
+            "\n  \"frameworks\": [\"React\", \"FastAPI\", \"PyTorch\", \"TensorFlow\", ...],"
+            "\n  \"libraries_and_tools\": [\"OpenCV\", \"NumPy\", \"Pandas\", \"YOLOv8\", ...],"
+            "\n  \"databases\": [\"PostgreSQL\", \"MongoDB\", ...],"
+            "\n  \"infrastructure\": [\"Docker\", \"Kubernetes\", \"AWS\", \"NVIDIA Jetson\", ...],"
+            "\n  \"developer_tools\": [\"Git\", \"Linux\", \"CI/CD\", \"MLflow\", ...],"
+            "\n  \"domain_specific_skills\": [\"MAVLink\", \"PX4\", \"Gazebo SITL\", \"Object Tracking\", ...],"
+            "\n  \"concepts\": [\"Computer Vision\", \"Deep Learning\", \"API Design\", \"Edge Deployment\", ...],"
+            "\n  \"problem_solving\": {{ \"required\": true/false, \"signals\": [\"LeetCode\", \"Codeforces\", \"Hackathons\"] }},"
             "\n  \"evaluation_signals\": {{ \"github\": [\"Project Ownership\", \"Commits\"] }},"
-            "\n  \"strict_requirements\": [\"JavaScript\", \"Python\", \"Relational databases\"],"
-            "\n  \"soft_requirements\": [\"Docker\", \"Cloud platforms\"],"
+            "\n  \"strict_requirements\": [\"Python\", \"OpenCV\", ...all skills listed as Required],"
+            "\n  \"soft_requirements\": [\"Docker\", \"TensorRT\", ...all skills listed as Good to have/Bonus],"
             "\n  \"excluded_signals\": [\"Formal Job Experience\", \"College Pedigree\"],"
             "\n  \"matching_philosophy\": {{ \"partial_matches_allowed\": true/false, \"evidence_over_claims\": true/false, \"learning_velocity_weight\": 0.1-0.3 }}"
             "\n}}"
         )
+
 
     def extract(self, description, title=""):
         """Extract v2 structured intelligence from JD."""

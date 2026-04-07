@@ -2,9 +2,10 @@
 
 import json
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 from ..utils.match_normalizer import MatchNormalizer # type: ignore
+from .job_parser import JobParserAgent
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,27 @@ class MatchingAgent:
     Formula: Deterministic 4-pillar scoring [Core 40%, Frameworks 25%, Evidence 20%, Growth 15%]
     """
     
+    def __init__(self):
+        self.job_parser = JobParserAgent()
+
+    def match_candidate(self, candidate_credential: Dict, job_requirements: Any, experience_years: int = 0, protocall_result: Optional[Dict] = None) -> Dict:
+        """
+        Compatibility method for LangGraph nodes.
+        Wraps the main matching logic.
+        """
+        # If job_requirements is a string (raw JD), parse it first
+        if isinstance(job_requirements, str):
+            logger.info("[MATCHING] job_requirements is a string. Parsing with JobParserAgent...")
+            job_requirements = self.job_parser.extract_requirements(job_requirements)
+            
+        # Ensure candidate has the necessary fields
+        candidate = candidate_credential.copy()
+        candidate["experience_years"] = experience_years
+        if protocall_result:
+            candidate["protocall_result"] = protocall_result
+            
+        return self.match(job_requirements, candidate)
+
     def match(self, jd: Dict, candidate: Dict) -> Dict:
         """
         Main entry point for matching.
@@ -77,13 +99,15 @@ class MatchingAgent:
         frameworks = set(jd.get("frontend_frameworks", []) + jd.get("backend_frameworks", []))
         infra = set(jd.get("infrastructure_concepts", []) + jd.get("backend_concepts", []))
         tools = set(jd.get("developer_tools", []))
+        soft = set(jd.get("soft_requirements", []))
         verified = set(cand.get("verified_skills", []))
 
         fw_match = len(verified & frameworks) / max(1, len(frameworks))
         infra_match = len(verified & infra) / max(1, len(infra))
         tool_match = len(verified & tools) / max(1, len(tools))
+        soft_match = len(verified & soft) / max(1, len(soft)) if soft else 0.0
 
-        pillar_score = (0.5 * fw_match + 0.3 * infra_match + 0.2 * tool_match)
+        pillar_score = (0.40 * fw_match + 0.25 * tool_match + 0.20 * infra_match + 0.15 * soft_match)
         return pillar_score * 0.20
         
     def _score_experience(self, jd: Dict, cand: Dict) -> float:
@@ -109,8 +133,11 @@ class MatchingAgent:
             cp_contrib = 0.05
         else:
             cp_contrib = 0.0
+
+        # Hackathon bonus — JD explicitly rewards this signal
+        hackathon_contrib = 0.05 if cand.get("has_hackathon", False) else 0.0
             
-        return github_contrib + cp_contrib
+        return min(0.15, github_contrib + cp_contrib + hackathon_contrib)
 
     def _score_learning(self, jd: Dict, cand: Dict) -> float:
         """Pillar 5: Learning Velocity (10% Weight)"""

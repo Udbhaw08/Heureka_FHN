@@ -17,8 +17,19 @@ import json
 import logging
 import hashlib
 import uuid
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
+
+# Ontology Imports
+try:
+    from ..utils.ontology_loader import SKILL_DB
+    from ..skill_classifier import classify_skill
+except (ImportError, ValueError):
+    import sys
+    from pathlib import Path
+    sys.path.append(str(Path(__file__).parent.parent))
+    from utils.ontology_loader import SKILL_DB
+    from skill_classifier import classify_skill
 
 logger = logging.getLogger(__name__)
 
@@ -201,10 +212,23 @@ class SkillVerificationAgentV2:
         else:
             skills = evidence_graph.get("skills", {})
         
-        # 3. Cleanup & Standardization
+        # 3. Cleanup & Standardization + Ontology Verification
         cleaned_skills = {}
         NOISE_TOOLS = ["vs code", "github", "git", "gitlab", "bitbucket", "npm", "yarn"]
         
+        # Prepare combined evidence text for verification
+        # 2026 Fix: Combine all available text signals for more robust pattern matching
+        evidence_text = ""
+        if ats_data and "raw_text" in ats_data:
+            evidence_text += ats_data["raw_text"] + "\n"
+        
+        # Add GitHub project descriptions and READMEs if available
+        if github_data and "data" in github_data:
+            repo_data = github_data["data"]
+            if isinstance(repo_data, dict) and "projects" in repo_data:
+                for proj in repo_data["projects"]:
+                    evidence_text += proj.get("name", "") + " " + proj.get("description", "") + "\n"
+
         for skill, data in skills.items():
             s_lower = skill.lower()
             if s_lower in NOISE_TOOLS: continue
@@ -215,6 +239,19 @@ class SkillVerificationAgentV2:
                 fixed_name = data["language"]
             
             if "t ailwind" in s_lower: fixed_name = "Tailwind CSS"
+            
+            # --- NEW: Ontology Verification ---
+            v_res = self.verify_skill(fixed_name, evidence_text)
+            if v_res and v_res.get("verified"):
+                # Augment skill data with verification evidence
+                if not isinstance(data, dict): data = {"status": "self_attested"}
+                data["verified_by_ontology"] = True
+                data["ontology_confidence"] = v_res.get("confidence", 0.5)
+                data["ontology_evidence"] = v_res.get("evidence", [])
+                
+                # Boost confidence if pattern matched
+                current_conf = data.get("confidence", 0.5)
+                data["confidence"] = min(1.0, current_conf + (v_res.get("confidence", 0.5) * 0.2))
             
             cleaned_skills[fixed_name] = data
         
@@ -347,6 +384,50 @@ class SkillVerificationAgentV2:
             "output": credential_output
         }
     
+    def verify_skill(self, skill: str, evidence_text: str) -> Optional[Dict[str, Any]]:
+        """
+        Verify a skill using ontology patterns against evidence text.
+        
+        Args:
+            skill: The skill name to verify
+            evidence_text: The text to search for patterns (GitHub code, ATS text, etc.)
+            
+        Returns:
+            Verification result dict if skill is in ontology, else None
+        """
+        skill_data = SKILL_DB.get(skill)
+        if not skill_data:
+            return None
+
+        matches = []
+        # Check verification methods (patterns) defined in ontology
+        for lang, patterns in skill_data.get("verification_methods", {}).items():
+            for p in patterns:
+                if p.lower() in evidence_text.lower():
+                    matches.append(p)
+
+        # Also check interface patterns if present
+        for lang, patterns in skill_data.get("interface_patterns", {}).items():
+            for p in patterns:
+                if p.lower() in evidence_text.lower():
+                    matches.append(p)
+
+        if matches:
+            return {
+                "skill": skill,
+                "type": "framework",
+                "verified": True,
+                "confidence": skill_data.get("confidence_weight", 0.5),
+                "evidence": list(set(matches)) # Unique matches
+            }
+
+        return {
+            "skill": skill,
+            "type": "framework",
+            "verified": False,
+            "confidence": 0.0
+        }
+    
     def _tier_skills(self, skills: Dict[str, Dict]) -> Dict[str, List[Dict]]:
         """
         Categorize skills into tiers for better matching precision.
@@ -359,17 +440,15 @@ class SkillVerificationAgentV2:
             "tools": []
         }
         
-        # Simple keyword matching taxonomy
-        TAXONOMY = {
-            "core": ["python", "javascript", "java", "c++", "c", "go", "rust", "sql", "html", "css", "typescript", "ruby", "php", "swift", "kotlin", "algorithms", "data structures", "machine learning", "deep learning", "computer vision", "nlp"],
-            "frameworks": ["react", "react.js", "angular", "vue", "django", "flask", "spring", "express", "next.js", "node.js", "tensorflow", "pytorch", "keras", "opencv", "yolo", "fastapi", "tailwind", "bootstrap"],
-            "infrastructure": ["aws", "azure", "gcp", "docker", "kubernetes", "terraform", "jenkins", "linux", "unix", "bash", "shell"],
-            "tools": ["git", "github", "gitlab", "postman", "vs code", "jira", "trello", "slack", "office", "excel", "powerpoint"]
-        }
+        # Dynamic taxonomy from ontology + fallback
+        # ANYTHING in ontology is considered a framework/system
         
         for skill_name, data in skills.items():
             skill_lower = skill_name.lower()
             categorized = False
+            
+            # 1. Use Ontology Classifier (Gold Standard)
+            s_type = classify_skill(skill_name)
             
             # Extract score (0.0 to 1.0 -> 0 to 100)
             conf = data.get("confidence", 0.0)
@@ -377,20 +456,35 @@ class SkillVerificationAgentV2:
             
             skill_obj = {"name": skill_name, "score": score}
             
-            for tier, keywords in TAXONOMY.items():
-                if any(k == skill_lower for k in keywords) or \
-                   any(k in skill_lower and len(k) > 4 for k in ["framework", "library", "tool"]): # Heuristic
-                      if skill_lower in keywords:
+            if s_type == "framework":
+                tiers["frameworks"].append(skill_obj)
+                categorized = True
+            elif s_type == "language":
+                tiers["core"].append(skill_obj)
+                categorized = True
+            
+            # 2. Legacy Taxonomy Fallback (if not in ontology)
+            if not categorized:
+                TAXONOMY = {
+                    "core": ["algorithms", "data structures", "machine learning", "deep learning", "computer vision", "nlp"],
+                    "infrastructure": ["aws", "azure", "gcp", "docker", "kubernetes", "terraform", "jenkins", "linux", "unix", "bash", "shell"],
+                    "tools": ["git", "github", "gitlab", "postman", "vs code", "jira", "trello", "slack", "office", "excel", "powerpoint"]
+                }
+                
+                for tier, keywords in TAXONOMY.items():
+                    if any(k == skill_lower for k in keywords):
                         tiers[tier].append(skill_obj)
                         categorized = True
                         break
             
-            # Fallback based on common heuristics if exact match not found
+            # 3. Final Fallback based on common heuristics
             if not categorized:
-                if "framework" in skill_lower or ".js" in skill_lower:
+                if "framework" in skill_lower or ".js" in skill_lower or "library" in skill_lower:
                     tiers["frameworks"].append(skill_obj)
                 elif "tool" in skill_lower:
                     tiers["tools"].append(skill_obj)
+                elif "cloud" in skill_lower or "infra" in skill_lower:
+                    tiers["infrastructure"].append(skill_obj)
                 else:
                     # Default high-value to core
                     tiers["core"].append(skill_obj)

@@ -25,7 +25,7 @@ class DualLLMClient:
         
         # OpenRouter Config
         self.openrouter_url = "https://openrouter.ai/api/v1/chat/completions"
-        self.cloud_model = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-8b-instruct:free")
+        self.cloud_model = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
 
     def call_ollama(self, prompt: str, system_prompt: str = "") -> Dict:
         """Execute prompt on Local Ollama."""

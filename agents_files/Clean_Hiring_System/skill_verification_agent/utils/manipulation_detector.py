@@ -34,7 +34,7 @@ class PromptInjectionDefender:
     Uses a 'critic' LLM (Claude-3.5 via OpenRouter) to inspect resume before main agent
     """
     
-    def __init__(self, model_name: str = "anthropic/claude-3.5-sonnet"):
+    def __init__(self, model_name: str = "openai/gpt-4o-mini"):
         # We ignore model_name arg preferred by legacy code and use Client defaults (Claude)
         # or we can pass it if Client supported dynamic model switching.
         # But User EXPLICITLY requested Claude. Client has it hardcoded now.
