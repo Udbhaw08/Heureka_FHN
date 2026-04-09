@@ -27,6 +27,12 @@ if not DATABASE_URL:
         "Please configure your PostgreSQL connection string."
     )
 
+# Fix for Render/Heroku which provides 'postgres://' but asyncpg needs 'postgresql+asyncpg://'
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+elif DATABASE_URL.startswith("postgresql://") and "+asyncpg" not in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 # Create async engine
 engine = create_async_engine(
     DATABASE_URL,
