@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, lazy, Suspense, Component } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import Navbar from "./components/Navbar";
 
 class ErrorBoundary extends Component {
@@ -401,6 +402,7 @@ function App() {
                     </ErrorBoundary>
                 </Suspense>
             </AnimatePresence>
+            <Analytics />
         </div>
     );
 }

@@ -1,16 +1,14 @@
 {
+  "include": [
+    "backend",
+    "agents_services"
+  ],
   "extraPaths": [
-    ".",
-    "agents_files/Clean_Hiring_System",
-    "agents_files/Clean_Hiring_System/skill_verification_agent",
-    "zynd_integration",
-    "backend"
+    "backend",
+    "agents_services"
   ],
-  "ignore": [
-    "**/node_modules",
-    "**/__pycache__"
-  ],
-  "reportMissingImports": "warning",
-  "reportMissingModuleSource": "none",
-  "pythonVersion": "3.11"
+  "typeCheckingMode": "basic",
+  "pythonVersion": "3.12",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false
 }
