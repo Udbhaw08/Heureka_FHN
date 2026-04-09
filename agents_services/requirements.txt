@@ -28,3 +28,8 @@ httpx==0.27.2
 loguru==0.7.2
 orjson==3.10.12
 python-dateutil==2.9.0
+
+# Added for compatibility
+flask>=3.0.0
+pdfplumber>=0.11.0
+pdfminer.six>=20231228

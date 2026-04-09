@@ -2,8 +2,8 @@
 // so API calls reach the backend. Falls back to localhost for development.
 const _envBase = import.meta.env.VITE_BACKEND_URL;
 const _dynamicBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:8012'
-  : `http://${window.location.hostname}:8012`;
+  ? 'http://localhost:8012' 
+  : `https://${window.location.hostname}`; // Use https by default for production
 const BASE = _envBase || _dynamicBase;
 console.log("Using Backend URL:", BASE);
 

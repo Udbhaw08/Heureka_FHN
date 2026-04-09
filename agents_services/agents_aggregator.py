@@ -56,12 +56,22 @@ services_map = {
     "codeforces": "codeforce_service",
 }
 
+from fastapi.middleware.wsgi import WSGIMiddleware
+
 for path, module_name in services_map.items():
     try:
         logger.info(f"Loading agent: {module_name}...")
         module = importlib.import_module(module_name)
         if hasattr(module, "app"):
-            app.mount(f"/{path}", module.app)
+            sub_app = module.app
+            
+            # Detect if it's a Flask app (WSGI) or FastAPI app (ASGI)
+            if hasattr(sub_app, "wsgi_app"): # True for Flask
+                logger.info(f"Detected Flask app for {module_name}, wrapping in WSGIMiddleware")
+                app.mount(f"/{path}", WSGIMiddleware(sub_app))
+            else:
+                app.mount(f"/{path}", sub_app)
+                
             logger.info(f"Successfully mounted {module_name} at /{path}")
         else:
             logger.warning(f"Module {module_name} has no 'app' attribute")
