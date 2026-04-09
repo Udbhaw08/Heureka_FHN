@@ -1,0 +1,54 @@
+{
+  "id": "d0402bc6-7233-47a7-8cd9-d422798433ef",
+  "didIdentifier": "did:polygonid:polygon:amoy:2qUfvAqvUL6Ajw7LevkcZbpxVipQHbxA3BjzdAXcvZ",
+  "did": {
+    "id": "urn:098fd6d2-0513-415e-9e70-56f3b680ccbf",
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://schema.iden3.io/core/jsonld/auth.jsonld"
+    ],
+    "type": [
+      "VerifiableCredential",
+      "AuthBJJCredential"
+    ],
+    "credentialSubject": {
+      "x": "4687149151169622123437301559995019059906693863228448116657193029957295341141",
+      "y": "9551097012792472387077432670432110783209910699476809744320224838321381780590",
+      "type": "AuthBJJCredential"
+    },
+    "issuer": "did:polygonid:polygon:amoy:2qUfvAqvUL6Ajw7LevkcZbpxVipQHbxA3BjzdAXcvZ",
+    "credentialSchema": {
+      "id": "https://schema.iden3.io/core/json/auth.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "https://rhs-staging.polygonid.me/node?state=320dbd60b664f1e8358791bf72daf01af32faa1795859ac77a33d54e63bb330d",
+      "type": "Iden3ReverseSparseMerkleTreeProof",
+      "revocationNonce": 0
+    },
+    "issuanceDate": "2026-04-06T06:59:08.452Z",
+    "proof": [
+      {
+        "issuerData": {
+          "id": "did:polygonid:polygon:amoy:2qUfvAqvUL6Ajw7LevkcZbpxVipQHbxA3BjzdAXcvZ",
+          "state": {
+            "rootOfRoots": "0000000000000000000000000000000000000000000000000000000000000000",
+            "revocationTreeRoot": "0000000000000000000000000000000000000000000000000000000000000000",
+            "claimsTreeRoot": "014c3f190306d482eef2cf0f6bc322c1ac8991fdd57dbd312d6fabc65fcc650c",
+            "value": "320dbd60b664f1e8358791bf72daf01af32faa1795859ac77a33d54e63bb330d"
+          }
+        },
+        "type": "Iden3SparseMerkleTreeProof",
+        "coreClaim": "cca3371a6cb1b715004407e325bd993c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000055febccb6a63aa53cf1ab7cd73fcec15c82ff06ddb717f290d64699b18d55c0a6e2cdb3ccdde8b8f189c5c66c1242288b8f25525c42bb5e6ce824bdbb5ba1d150000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "mtp": {
+          "existence": true,
+          "siblings": []
+        }
+      }
+    ]
+  },
+  "name": "Bias Agent",
+  "description": "Detects bias signals in hiring decisions and produces an explainable bias report.",
+  "seed": "eBTyDHfLJq11X2dRrmRql/FuULXf+r6cVu6r1d5H0i8="
+}

@@ -1,0 +1,54 @@
+{
+  "id": "db7f1dd5-7a66-47a4-9207-83f17d5c538c",
+  "didIdentifier": "did:polygonid:polygon:amoy:2qT8NgfHiRsznKMVYDcvUN4PfsRf7EqxgQFy3UqwzV",
+  "did": {
+    "id": "urn:6a374c1a-2994-4a3b-8240-c3937db36711",
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://schema.iden3.io/core/jsonld/auth.jsonld"
+    ],
+    "type": [
+      "VerifiableCredential",
+      "AuthBJJCredential"
+    ],
+    "credentialSubject": {
+      "x": "12506638865991065343139620135561909575870120914829019303549827573160292218131",
+      "y": "6414247013013042639790859432690846230873110475303072780550743119846919123724",
+      "type": "AuthBJJCredential"
+    },
+    "issuer": "did:polygonid:polygon:amoy:2qT8NgfHiRsznKMVYDcvUN4PfsRf7EqxgQFy3UqwzV",
+    "credentialSchema": {
+      "id": "https://schema.iden3.io/core/json/auth.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "https://rhs-staging.polygonid.me/node?state=79a86ca3e842eff7a285ba63bfa44c98ae3863f7113a04e9dcd9a7fda60aa007",
+      "type": "Iden3ReverseSparseMerkleTreeProof",
+      "revocationNonce": 0
+    },
+    "issuanceDate": "2026-03-22T16:03:55.134Z",
+    "proof": [
+      {
+        "issuerData": {
+          "id": "did:polygonid:polygon:amoy:2qT8NgfHiRsznKMVYDcvUN4PfsRf7EqxgQFy3UqwzV",
+          "state": {
+            "rootOfRoots": "0000000000000000000000000000000000000000000000000000000000000000",
+            "revocationTreeRoot": "0000000000000000000000000000000000000000000000000000000000000000",
+            "claimsTreeRoot": "8fe25e7a5cab17eb14f22af3e6e87e5392254a1c27426e17a54ad795200aea07",
+            "value": "79a86ca3e842eff7a285ba63bfa44c98ae3863f7113a04e9dcd9a7fda60aa007"
+          }
+        },
+        "type": "Iden3SparseMerkleTreeProof",
+        "coreClaim": "cca3371a6cb1b715004407e325bd993c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001375b1c8a641cf4905bc9400b48a5942c3af5dc4d7097d385f4ac50fba81a61b0c3380d5d8eb89dbd80d519c5f5420083aeb14095cdac0ecc64f1abacc552e0e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "mtp": {
+          "existence": true,
+          "siblings": []
+        }
+      }
+    ]
+  },
+  "name": "Ats Agent",
+  "description": "Runs ATS-style checks (fraud/blacklist/policy gating) and produces a transparent pass/fail decision.",
+  "seed": "eGEty7boTUGn7X5UHuwKPb4kde7GXcxr5O2cXejaLXE="
+}

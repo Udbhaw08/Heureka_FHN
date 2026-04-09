@@ -1,0 +1,54 @@
+{
+  "id": "a4460169-cdd1-4c52-93a0-134af9ce686f",
+  "didIdentifier": "did:polygonid:polygon:amoy:2qauZRkVR84XS74GQu2e5r7hdqFC9avEftVkguLXGS",
+  "did": {
+    "id": "urn:5d1a8763-03c2-488e-bc76-162d8a80f34f",
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://schema.iden3.io/core/jsonld/auth.jsonld"
+    ],
+    "type": [
+      "VerifiableCredential",
+      "AuthBJJCredential"
+    ],
+    "credentialSubject": {
+      "x": "21323432492634024372697984939273065649441373648377434763769646624855006662572",
+      "y": "14222537626752862292597735860416945805594127890954668154499662213052011855610",
+      "type": "AuthBJJCredential"
+    },
+    "issuer": "did:polygonid:polygon:amoy:2qauZRkVR84XS74GQu2e5r7hdqFC9avEftVkguLXGS",
+    "credentialSchema": {
+      "id": "https://schema.iden3.io/core/json/auth.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "https://rhs-staging.polygonid.me/node?state=ea4ea4dcf9ee4b21a4abfbcfd165cfc01f70dfbc44262afe5268d80efaa6d006",
+      "type": "Iden3ReverseSparseMerkleTreeProof",
+      "revocationNonce": 0
+    },
+    "issuanceDate": "2026-03-22T16:04:01.153Z",
+    "proof": [
+      {
+        "issuerData": {
+          "id": "did:polygonid:polygon:amoy:2qauZRkVR84XS74GQu2e5r7hdqFC9avEftVkguLXGS",
+          "state": {
+            "rootOfRoots": "0000000000000000000000000000000000000000000000000000000000000000",
+            "revocationTreeRoot": "0000000000000000000000000000000000000000000000000000000000000000",
+            "claimsTreeRoot": "3ae0c078bea3f7bc7b8a7a57a68b3bbaf21d10d626ea7f01627f6a5e43854f2b",
+            "value": "ea4ea4dcf9ee4b21a4abfbcfd165cfc01f70dfbc44262afe5268d80efaa6d006"
+          }
+        },
+        "type": "Iden3SparseMerkleTreeProof",
+        "coreClaim": "cca3371a6cb1b715004407e325bd993c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ac4fe0256af846f070cb5cf8b4033ba8c300ca5a9fed9eec112ef18d95a2242ffa3ef7827bf1fd536eb5b19707f0e46aaf6a14d7d8969ad2a018736fc8ab711f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "mtp": {
+          "existence": true,
+          "siblings": []
+        }
+      }
+    ]
+  },
+  "name": "GitHub Agent",
+  "description": "Scrapes and analyzes GitHub profiles for developer technical evidence.",
+  "seed": "LtQ+dnSr78vU1g/icnZibeUDc6R9Y7OjLBUBTXP4yP8="
+}

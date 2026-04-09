@@ -72,13 +72,26 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db():
     """
-    Initialize database - create all tables
-    Note: In production, use Alembic migrations instead
+    Initialize database - create all tables with retry logic
     """
     from app.models import Base
+    import asyncio
     
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    max_retries = 5
+    retry_delay = 5
+    
+    for attempt in range(1, max_retries + 1):
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            print("✓ Database initialized successfully")
+            return
+        except Exception as e:
+            if attempt == max_retries:
+                print(f"✗ Failed to initialize database after {max_retries} attempts: {e}")
+                raise
+            print(f"⚠ Database connection attempt {attempt} failed, retrying in {retry_delay}s... ({e})")
+            await asyncio.sleep(retry_delay)
 
 
 async def close_db():

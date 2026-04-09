@@ -1,0 +1,54 @@
+{
+  "id": "929cc045-8c73-4ad4-a458-5445ad297545",
+  "didIdentifier": "did:polygonid:polygon:amoy:2qUPCkXq6fsZ8joBkYrt7mtgwuhvL9mG3XF8dfhbVE",
+  "did": {
+    "id": "urn:7711c9f6-ee8e-4a1c-8dfe-a0174859f943",
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://schema.iden3.io/core/jsonld/iden3proofs.jsonld",
+      "https://schema.iden3.io/core/jsonld/auth.jsonld"
+    ],
+    "type": [
+      "VerifiableCredential",
+      "AuthBJJCredential"
+    ],
+    "credentialSubject": {
+      "x": "21629169402666395982516768533318669323613039298921425713664390866413773403922",
+      "y": "21145406534312713503849258673222566374034198822851969261147794394615090573366",
+      "type": "AuthBJJCredential"
+    },
+    "issuer": "did:polygonid:polygon:amoy:2qUPCkXq6fsZ8joBkYrt7mtgwuhvL9mG3XF8dfhbVE",
+    "credentialSchema": {
+      "id": "https://schema.iden3.io/core/json/auth.json",
+      "type": "JsonSchema2023"
+    },
+    "credentialStatus": {
+      "id": "https://rhs-staging.polygonid.me/node?state=acf8bb172c5e98d9e69c6ff6ed7d5763a8e70620071eef9349e2983a5071500a",
+      "type": "Iden3ReverseSparseMerkleTreeProof",
+      "revocationNonce": 0
+    },
+    "issuanceDate": "2026-03-22T16:04:10.141Z",
+    "proof": [
+      {
+        "issuerData": {
+          "id": "did:polygonid:polygon:amoy:2qUPCkXq6fsZ8joBkYrt7mtgwuhvL9mG3XF8dfhbVE",
+          "state": {
+            "rootOfRoots": "0000000000000000000000000000000000000000000000000000000000000000",
+            "revocationTreeRoot": "0000000000000000000000000000000000000000000000000000000000000000",
+            "claimsTreeRoot": "1864dce9fc801f5617eb3ff26bda0b5d6f069aab26440a69fab6a4fde43c1f0d",
+            "value": "acf8bb172c5e98d9e69c6ff6ed7d5763a8e70620071eef9349e2983a5071500a"
+          }
+        },
+        "type": "Iden3SparseMerkleTreeProof",
+        "coreClaim": "cca3371a6cb1b715004407e325bd993c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001237985ba57cad519a2c8b2a01cb6745805c7c7679d1c2e3a8a488d311add12f36f080c489fe5a32dca2d5611a8d535a4767f87f423e50293bc332c23fe0bf2e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "mtp": {
+          "existence": true,
+          "siblings": []
+        }
+      }
+    ]
+  },
+  "name": "Codeforces Agent",
+  "description": "Scrapes and analyzes Codeforces profiles for competitive programming evidence.",
+  "seed": "/Wy/c4YVp6MBU1wjNJK2r8QYpV6NCy7RiHKsvXFFUmw="
+}

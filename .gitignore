@@ -71,9 +71,6 @@ tmp/
 !.gsd/phases/*/PLAN.md
 
 # Project-specific professional exclusions
-.agent-*/
-agents_files/
-agents_services/
 _zyndai_agent_shim_disabled/
 credentials/
 data/
