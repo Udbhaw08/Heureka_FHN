@@ -1,10 +1,6 @@
-// Dynamic backend URL: if accessed via network IP (e.g. NFC on mobile), use that same IP
-// so API calls reach the backend. Falls back to localhost for development.
-const _envBase = import.meta.env.VITE_BACKEND_URL;
-const _dynamicBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const BASE = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:8012' 
-  : `https://${window.location.hostname}`; // Use https by default for production
-const BASE = _envBase || _dynamicBase;
+  : 'https://fhh-backend-bb62.onrender.com'); 
 console.log("Using Backend URL:", BASE);
 
 // ── Auth token management ─────────────────────────────────────────────────────

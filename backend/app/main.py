@@ -106,6 +106,7 @@ app.include_router(passport.router)
 
 # Health check endpoint
 @app.get("/health")
+@app.head("/health")
 async def health_check():
     """
     Health check endpoint.
@@ -119,6 +120,7 @@ async def health_check():
 
 # Root endpoint
 @app.get("/")
+@app.head("/")
 async def root():
     """
     Root endpoint with API information.
