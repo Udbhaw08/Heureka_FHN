@@ -17,8 +17,9 @@ class Settings(BaseSettings):
     PASSPORT_AGENT_URL: str = "http://localhost:8008"
 
     # Ed25519 signing keys (base64 raw)
-    SIGNING_PRIVATE_KEY_B64: str
-    SIGNING_PUBLIC_KEY_B64: str
+    # Provided with defaults for demo purposes; override in production
+    SIGNING_PRIVATE_KEY_B64: str = "J2nzAJ7R0oA9zjTOhApGtngr02uoFh4SamqSOGqL2Fk="
+    SIGNING_PUBLIC_KEY_B64: str = "pMOiQrt/a30izmUSA1jOAM4DStxe6iIZPlcVXLAxYSA="
 
     # Simple app secret (optional)
     APP_SECRET: str = "dev-secret"
