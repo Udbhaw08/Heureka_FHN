@@ -15,17 +15,24 @@ class DualLLMClient:
     """
     
     def __init__(self, openrouter_api_key: Optional[str] = None):
-        # Fallback to OPENAI_API_KEY if OPENROUTER_API_KEY is missing (common in many setups)
-        self.openrouter_api_key = openrouter_api_key or os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
+        # Flexible key lookup
+        self.openrouter_api_key = (
+            openrouter_api_key or 
+            os.getenv("OPENROUTER_API_KEY") or 
+            os.getenv("OPENAI_API_KEY") or
+            os.getenv("API_KEY")
+        )
         
-        # Ollama Config
-        self.ollama_url = "http://localhost:11434/api/generate"
-        # 2026 Fix: Respect OLLAMA_MODEL from .env, or use llama3.2 which is current standard
+        # Ollama Config (kept as backup only)
+        self.ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
         self.ollama_model = os.getenv("OLLAMA_MODEL", "llama3.2") 
         
         # OpenRouter Config
-        self.openrouter_url = "https://openrouter.ai/api/v1/chat/completions"
-        self.cloud_model = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
+        self.openrouter_url = os.getenv("OPENAI_API_BASE", "https://openrouter.ai/api/v1")
+        if not self.openrouter_url.endswith("/chat/completions"):
+            self.openrouter_url = self.openrouter_url.rstrip("/") + "/chat/completions"
+            
+        self.cloud_model = os.getenv("LLM_MODEL") or os.getenv("OPENROUTER_MODEL") or "anthropic/claude-3-haiku"
 
     def call_ollama(self, prompt: str, system_prompt: str = "") -> Dict:
         """Execute prompt on Local Ollama."""

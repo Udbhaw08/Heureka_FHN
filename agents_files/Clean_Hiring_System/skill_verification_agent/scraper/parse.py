@@ -31,20 +31,16 @@ class ProfileParser:
     Unified parser that can use either Ollama or OpenRouter LLMs.
     """
     
-    def __init__(self, backend: str = "ollama", model: str = None):
+    def __init__(self, backend: str = "openrouter", model: str = None):
         """
         Initialize parser with specified backend.
-        
-        Args:
-            backend: "ollama" or "openrouter"
-            model: Model name (defaults based on backend)
         """
         self.backend = backend.lower()
         
         if self.backend == "ollama":
-            self._init_ollama(model or "llama3.2")
+            self._init_ollama(model or os.getenv("OLLAMA_MODEL", "llama3.2"))
         elif self.backend == "openrouter":
-            self._init_openrouter(model or "meta-llama/llama-3.1-8b-instruct")
+            self._init_openrouter(model or os.getenv("LLM_MODEL") or "anthropic/claude-3-haiku")
         else:
             raise ValueError(f"Unknown backend: {backend}. Use 'ollama' or 'openrouter'.")
         
@@ -65,8 +61,13 @@ class ProfileParser:
         try:
             from langchain_openai import ChatOpenAI
             
-            # Try to get API key from config or environment
-            api_key = os.getenv("OPENROUTER_API_KEY")
+            # Robust API key lookup
+            api_key = (
+                os.getenv("OPENROUTER_API_KEY") or 
+                os.getenv("OPENAI_API_KEY") or 
+                os.getenv("API_KEY")
+            )
+            
             if not api_key:
                 try:
                     from config import OPENROUTER_API_KEY
@@ -75,11 +76,13 @@ class ProfileParser:
                     pass
             
             if not api_key:
-                raise ValueError("OPENROUTER_API_KEY not found in environment or config")
+                logger.warning("OPENROUTER_API_KEY not found. Attempting to proceed but LLM calls may fail.")
+            
+            base_url = os.getenv("OPENAI_API_BASE") or "https://openrouter.ai/api/v1"
             
             self.llm = ChatOpenAI(
-                base_url="https://openrouter.ai/api/v1",
-                api_key=api_key,
+                base_url=base_url,
+                api_key=api_key or "missing_key",
                 model=model,
                 temperature=0.1
             )
@@ -214,7 +217,7 @@ def parse_with_ollama(dom_chunks: List[str], parse_description: str) -> str:
     Returns:
         Parsed result as string
     """
-    parser = ProfileParser(backend="ollama")
+    parser = ProfileParser(backend="openrouter")
     
     results = []
     for i, chunk in enumerate(dom_chunks, start=1):

@@ -15,11 +15,19 @@ class JobParserAgent:
     
     def __init__(self):
         self.client = None
-        if OPENROUTER_API_KEY:
+        api_key = (
+            os.getenv("OPENROUTER_API_KEY") or 
+            os.getenv("OPENAI_API_KEY") or 
+            os.getenv("API_KEY") or
+            OPENROUTER_API_KEY
+        )
+        base_url = os.getenv("OPENAI_API_BASE") or OPENROUTER_BASE_URL
+        
+        if api_key:
             try:
                 self.client = OpenAI(
-                    base_url=OPENROUTER_BASE_URL,
-                    api_key=OPENROUTER_API_KEY,
+                    base_url=base_url,
+                    api_key=api_key,
                 )
             except Exception as e:
                 logger.error(f"Failed to initialize OpenAI client: {e}")

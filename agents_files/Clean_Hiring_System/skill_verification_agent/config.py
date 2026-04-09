@@ -38,10 +38,8 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 # LinkedIn Strategy
 ENABLE_LINKEDIN = False  # Set to True if you implement user upload
 
-# ===== SCRAPER CONFIGURATION =====
-# LLM Backend for profile parsing
 # Options: "ollama" (local, free) or "openrouter" (cloud, paid)
-LLM_BACKEND = os.getenv("LLM_BACKEND", "ollama")
+LLM_BACKEND = os.getenv("LLM_BACKEND", "openrouter")
 
 # Ollama model (used when LLM_BACKEND = "ollama")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")

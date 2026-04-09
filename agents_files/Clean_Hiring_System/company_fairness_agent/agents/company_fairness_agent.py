@@ -53,12 +53,23 @@ class CompanyFairnessAgent:
     
     def __init__(self):
         """Initialize agent with LLM"""
+        api_key = (
+            os.getenv("OPENROUTER_API_KEY") or 
+            os.getenv("OPENAI_API_KEY") or 
+            os.getenv("API_KEY") or
+            OPENROUTER_API_KEY
+        )
+        base_url = os.getenv("OPENAI_API_BASE") or OPENROUTER_BASE_URL
+        
         self.llm = ChatOpenAI(
-            base_url=OPENROUTER_BASE_URL,
-            api_key=OPENROUTER_API_KEY,
+            base_url=base_url,
+            api_key=api_key or "missing_key",
             model=COMPANY_FAIRNESS_MODEL,
             temperature=MODEL_TEMPERATURE
         )
+        
+        if not api_key:
+            logger.warning("No API key found for CompanyFairnessAgent. LLM calls will likely fail.")
         
         logger.info(f"CompanyFairnessAgent initialized with model: {COMPANY_FAIRNESS_MODEL}")
     

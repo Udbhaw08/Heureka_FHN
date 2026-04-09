@@ -11,9 +11,13 @@ load_dotenv(override=True)
 class JobExtractionAgent:
     def __init__(self, model_name=None):
         """Initializes the agent with OpenRouter intelligence."""
-        api_key = os.getenv("OPENAI_API_KEY")
-        base_url = "https://openrouter.ai/api/v1"
-        model_to_use = model_name or os.getenv("LLM_MODEL", "anthropic/claude-3-haiku")
+        api_key = (
+            os.getenv("OPENROUTER_API_KEY") or 
+            os.getenv("OPENAI_API_KEY") or 
+            os.getenv("API_KEY")
+        )
+        base_url = os.getenv("OPENAI_API_BASE") or "https://openrouter.ai/api/v1"
+        model_to_use = model_name or os.getenv("LLM_MODEL") or "anthropic/claude-3-haiku"
         
         if not api_key or "placeholder" in api_key.lower():
             print("[WARN] JobExtractionAgent: No valid API key found. Using MOCK mode.")

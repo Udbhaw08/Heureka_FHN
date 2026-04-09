@@ -7,10 +7,14 @@ from langchain_core.prompts import ChatPromptTemplate
 
 class JobBiasAgent:
     def __init__(self, model_name=None):
-        """Initializes the agent with OpenRouter Claude for speed and accuracy."""
-        api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
-        base_url = "https://openrouter.ai/api/v1"
-        model_to_use = model_name or os.getenv("LLM_MODEL", "anthropic/claude-3-haiku")
+        """Initializes the agent with OpenRouter/OpenAI support."""
+        api_key = (
+            os.getenv("OPENROUTER_API_KEY") or 
+            os.getenv("OPENAI_API_KEY") or 
+            os.getenv("API_KEY")
+        )
+        base_url = os.getenv("OPENAI_API_BASE") or "https://openrouter.ai/api/v1"
+        model_to_use = model_name or os.getenv("LLM_MODEL") or "anthropic/claude-3-haiku"
         
         self.model = ChatOpenAI(
             model=model_to_use,
