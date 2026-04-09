@@ -15,6 +15,8 @@ services:
           type: web
           name: heureka-agents
           property: host
+      - key: PYTHON_VERSION
+        value: 3.11
       - key: BACKEND_PORT
         value: 8000
       - key: ENV
@@ -29,6 +31,8 @@ services:
     envVars:
       - key: PORT
         value: 8000
+      - key: PYTHON_VERSION
+        value: 3.11
 
 databases:
   - name: heureka-db
