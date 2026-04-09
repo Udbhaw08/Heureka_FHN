@@ -38,21 +38,39 @@ class AgentClient:
         """
         self.timeout = timeout
         
+        # Check for unified agents URL (useful for deployment)
+        unified_url = os.getenv("UNIFIED_AGENTS_URL")
+        
         # Agent service endpoints - Authoritative Map
         # These defaults match agents_services/ and start_all_complete.py
         # Set USE_ZYND=1 to route via Zynd orchestrator instead (ports 5101-5109)
-        self.endpoints = {
-            "matching": os.getenv("MATCHING_SERVICE_URL", "http://localhost:8001"),
-            "bias": os.getenv("BIAS_SERVICE_URL", "http://localhost:8002"),
-            "skill": os.getenv("SKILL_SERVICE_URL", "http://localhost:8003"),
-            "ats": os.getenv("ATS_SERVICE_URL", "http://localhost:8004"),
-            "github": os.getenv("GITHUB_SERVICE_URL", "http://localhost:8005"),
-            "leetcode": os.getenv("LEETCODE_SERVICE_URL", "http://localhost:8006"),
-            "linkedin": os.getenv("LINKEDIN_SERVICE_URL", "http://localhost:8007"),
-            "passport": os.getenv("PASSPORT_SERVICE_URL", "http://localhost:8008"),
-            "job_description": os.getenv("JOB_DESCRIPTION_SERVICE_URL", "http://localhost:8009"),
-            "codeforces": os.getenv("CODEFORCES_SERVICE_URL", "http://localhost:8010"),
-        }
+        if unified_url:
+            unified_url = unified_url.rstrip('/')
+            self.endpoints = {
+                "matching": f"{unified_url}/matching",
+                "bias": f"{unified_url}/bias",
+                "skill": f"{unified_url}/skill",
+                "ats": f"{unified_url}/ats",
+                "github": f"{unified_url}/github",
+                "leetcode": f"{unified_url}/leetcode",
+                "linkedin": f"{unified_url}/linkedin",
+                "passport": f"{unified_url}/passport",
+                "job_description": f"{unified_url}/job_description",
+                "codeforces": f"{unified_url}/codeforces",
+            }
+        else:
+            self.endpoints = {
+                "matching": os.getenv("MATCHING_SERVICE_URL", "http://localhost:8001"),
+                "bias": os.getenv("BIAS_SERVICE_URL", "http://localhost:8002"),
+                "skill": os.getenv("SKILL_SERVICE_URL", "http://localhost:8003"),
+                "ats": os.getenv("ATS_SERVICE_URL", "http://localhost:8004"),
+                "github": os.getenv("GITHUB_SERVICE_URL", "http://localhost:8005"),
+                "leetcode": os.getenv("LEETCODE_SERVICE_URL", "http://localhost:8006"),
+                "linkedin": os.getenv("LINKEDIN_SERVICE_URL", "http://localhost:8007"),
+                "passport": os.getenv("PASSPORT_SERVICE_URL", "http://localhost:8008"),
+                "job_description": os.getenv("JOB_DESCRIPTION_SERVICE_URL", "http://localhost:8009"),
+                "codeforces": os.getenv("CODEFORCES_SERVICE_URL", "http://localhost:8010"),
+            }
     
     async def close(self):
         """No persistent sessions to close for now."""

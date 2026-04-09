@@ -1,0 +1,35 @@
+services:
+  # 1. Main Backend API
+  - type: web
+    name: heureka-backend
+    env: python
+    buildCommand: "cd backend && pip install -r requirements.txt && python create_tables.py"
+    startCommand: "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: heureka-db
+          property: connectionString
+      - key: UNIFIED_AGENTS_URL
+        fromService:
+          type: web
+          name: heureka-agents
+          property: host
+      - key: BACKEND_PORT
+        value: 8000
+      - key: ENV
+        value: production
+
+  # 2. Unified Agents Service
+  - type: web
+    name: heureka-agents
+    env: python
+    buildCommand: "cd agents_services && pip install -r requirements.txt"
+    startCommand: "cd agents_services && uvicorn agents_aggregator:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PORT
+        value: 8000
+
+databases:
+  - name: heureka-db
+    plan: free
