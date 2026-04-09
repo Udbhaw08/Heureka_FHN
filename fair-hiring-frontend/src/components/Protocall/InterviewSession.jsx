@@ -181,7 +181,7 @@ export const InterviewSession = ({ config, onComplete }) => {
                         outCtx.resume();
 
                         const source = inCtx.createMediaStreamSource(stream);
-                        const scriptProcessor = inCtx.createScriptProcessor(4096, 1, 1);
+                        const scriptProcessor = inCtx.createScriptProcessor(512, 1, 1);
                         audioSourceRef.current = source;
                         scriptProcessorRef.current = scriptProcessor;
 
@@ -255,7 +255,8 @@ export const InterviewSession = ({ config, onComplete }) => {
                         if (msg.serverContent?.outputTranscription) {
                             transcriptionRef.current.model += msg.serverContent.outputTranscription.text;
                             setPartialTranscript(prev => ({ ...prev, model: transcriptionRef.current.model }));
-                        } else if (msg.serverContent?.inputTranscription) {
+                        }
+                        if (msg.serverContent?.inputTranscription) {
                             transcriptionRef.current.user += msg.serverContent.inputTranscription.text;
                             setPartialTranscript(prev => ({ ...prev, user: transcriptionRef.current.user }));
                         }
