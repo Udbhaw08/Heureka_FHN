@@ -94,25 +94,41 @@ class WhiteTextDetector:
         hidden_count = len(hidden_words)
         suspicious_count = len(suspicious_matches)
         
+        # Calculate hidden ratio (hidden vs total)
+        all_words_list = full_text.lower().split()
+        total_word_count = len(all_words_list)
+        hidden_ratio = hidden_count / total_word_count if total_word_count > 0 else 0
+        
         # Determine severity
-        if suspicious_count > 3 or hidden_count > 80:
+        # If NEARLY ALL text is "hidden" (e.g. > 90%), it's almost certainly an 
+        # extraction tool failure (pdfplumber vs fitz) rather than malicious stuffing.
+        if hidden_ratio > 0.90 and total_word_count > 50:
+            severity = "low"
+            action = "proceed"
+            explanation = f"Detected extraction tool discrepancy ({hidden_count} words). Not malicious."
+        elif suspicious_count > 3 or hidden_count > 80:
             severity = "critical"
             action = "immediate_blacklist"
+            explanation = f"Found {hidden_count} hidden words, {suspicious_count} suspicious"
         elif suspicious_count > 1 or hidden_count > 40:
             severity = "high"
             action = "queue_for_review"
+            explanation = f"Found {hidden_count} hidden words, {suspicious_count} suspicious"
         elif hidden_count > 15:
             severity = "medium"
             action = "flag_for_review"
+            explanation = f"Found {hidden_count} hidden words"
         else:
             severity = "low"
             action = "proceed"
-        
+            explanation = f"Negligible hidden content ({hidden_count} words)"
+
         return {
             "white_text_detected": hidden_count > 20,
             "severity": severity,
             "hidden_word_count": hidden_count,
             "suspicious_matches": list(suspicious_matches)[:10],
             "action": action,
-            "explanation": f"Found {hidden_count} hidden words, {suspicious_count} suspicious"
+            "explanation": explanation
         }
+

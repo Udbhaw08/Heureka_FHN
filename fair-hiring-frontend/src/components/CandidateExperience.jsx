@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,8 +24,10 @@ import { api } from "../api/backend";
 export default function CandidateExperience({ onExit }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const mainScrollRef = useRef(null);
   const [activePage, setActivePage] = useState("dashboard");
   const [selectedRoleForApply, setSelectedRoleForApply] = useState(null);
+  const [selectedJobForDetails, setSelectedJobForDetails] = useState(null);
 
   const [jobs, setJobs] = useState([]);
 
@@ -60,6 +62,17 @@ export default function CandidateExperience({ onExit }) {
   useEffect(() => {
     setStatsVisible(true);
   }, []);
+
+  // Scroll lock effect for JD Modal (targeting internal scroller)
+  useEffect(() => {
+    if (mainScrollRef.current) {
+      if (selectedJobForDetails) {
+        mainScrollRef.current.style.overflowY = "hidden";
+      } else {
+        mainScrollRef.current.style.overflowY = "auto";
+      }
+    }
+  }, [selectedJobForDetails]);
 
 
   const fetchAllData = useCallback(async () => {
@@ -136,6 +149,7 @@ export default function CandidateExperience({ onExit }) {
 
   return (
     <motion.div
+      ref={mainScrollRef}
       initial={{ x: "100%" }}
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
@@ -158,17 +172,26 @@ export default function CandidateExperience({ onExit }) {
             CANDIDATE INTERFACE
           </span>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <div className="font-grotesk text-[10px] font-black uppercase tracking-[0.25em] text-black/50">
-            ID: <span className="text-black">{candidateAnonId}</span>
+        <div className="flex items-center gap-6">
+          {activePage !== "dashboard" && (
+            <button
+              onClick={() => setActivePage("dashboard")}
+              className="bg-black text-white px-8 py-3 font-grotesk text-[10px] font-black uppercase tracking-[0.3em] hover:bg-[#1c1c1c] transition-all shadow-[4px_4px_0px_#ccc] active:translate-y-1 active:shadow-none"
+            >
+              BACK
+            </button>
+          )}
+          <div className="flex flex-col items-end gap-2">
+            <div className="font-grotesk text-[10px] font-black tracking-widest uppercase opacity-40">
+              ID: {candidateAnonId || "REF-UNSET"}
+            </div>
+            <button
+              onClick={logoutCandidate}
+              className="font-grotesk text-[9px] font-black uppercase tracking-[0.1em] text-red-600 hover:text-red-800 transition-colors"
+            >
+              LOGOUT
+            </button>
           </div>
-
-          <button
-            onClick={logoutCandidate}
-            className="px-4 py-2 border-2 border-black/20 font-grotesk text-[10px] font-black uppercase tracking-[0.25em] hover:border-black hover:bg-black hover:text-white transition-all"
-          >
-            LOGOUT
-          </button>
         </div>
       </header>
 
@@ -257,12 +280,7 @@ export default function CandidateExperience({ onExit }) {
                     Direct matching based on your skill passport signatures.
                   </p>
                 </div>
-                <button
-                  onClick={() => setActivePage("dashboard")}
-                  className="bg-black text-white px-8 py-3 font-grotesk text-[10px] font-black uppercase tracking-[0.3em] hover:bg-black/90 transition-all shadow-[4px_4px_0px_#ccc] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                >
-                  BACK
-                </button>
+
               </div>
 
               <div className="space-y-12">
@@ -300,10 +318,22 @@ export default function CandidateExperience({ onExit }) {
                           </p>
                         </div>
 
-                        <p className="font-inter text-[11px] font-bold leading-tight opacity-70 uppercase tracking-tight max-w-xl">
-                          {role.desc ||
-                            "Agent-verified role requiring specialized technical signatures."}
-                        </p>
+                        <div className="space-y-3">
+                          <p className="font-inter text-[11px] font-bold leading-tight opacity-50 uppercase tracking-tight max-w-xl line-clamp-2">
+                            {role.desc ||
+                              "Agent-verified role requiring specialized technical signatures."}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedJobForDetails(role);
+                            }}
+                            className="font-grotesk text-[10px] font-black uppercase tracking-[0.2em] text-[#1c1c1c] hover:underline flex items-center gap-2 relative z-10"
+                          >
+                            [ VIEW FULL DESCRIPTION ]
+                          </button>
+                        </div>
 
                         <div className="flex flex-wrap gap-2">
                           {role.tags.map((tag) => (
@@ -377,12 +407,6 @@ export default function CandidateExperience({ onExit }) {
                     YOUR STATUS
                   </h2>
                 </div>
-                <button
-                  onClick={() => setActivePage("dashboard")}
-                  className="bg-black text-white px-10 py-4 border border-black font-grotesk text-[11px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-[6px_6px_0px_#ccc] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none mb-2"
-                >
-                  DASHBOARD
-                </button>
               </div>
 
               <div className="grid grid-cols-1 gap-12">
@@ -798,6 +822,119 @@ export default function CandidateExperience({ onExit }) {
           )}
         </AnimatePresence>
       </main>
+
+      {/* JOB DETAILS MODAL */}
+      {createPortal(
+        <AnimatePresence>
+          {selectedJobForDetails && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedJobForDetails(null)}
+                className="fixed inset-0 bg-black/90 backdrop-blur-xl"
+              />
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 30 }}
+                className="relative w-full max-w-4xl max-h-full flex flex-col bg-[#E6E6E3] border-[4px] border-black shadow-[30px_30px_0px_rgba(0,0,0,0.5)] z-10"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* MODAL HEADER */}
+                <div className="bg-white border-b-[4px] border-black p-6 md:px-10 flex justify-between items-center gap-6 shrink-0">
+                  <div className="flex-1 min-w-0">
+                    <label className="font-grotesk text-[10px] font-black uppercase tracking-[0.4em] text-black/40 block mb-1">
+                      AGENT VERIFIED ROLE
+                    </label>
+                    <h2 className="font-montreal font-black text-2xl md:text-4xl uppercase tracking-tighter leading-none text-black truncate">
+                      {selectedJobForDetails.title}
+                    </h2>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 shrink-0">
+                    <button
+                      onClick={() => {
+                        setSelectedRoleForApply(selectedJobForDetails);
+                        setActivePage("apply");
+                        setSelectedJobForDetails(null);
+                      }}
+                      className="bg-black text-white px-6 md:px-10 py-3 md:py-4 font-grotesk text-[11px] font-black uppercase tracking-[0.3em] hover:bg-[#A7FF2E] hover:text-black transition-all shadow-[4px_4px_0px_#ccc] active:translate-y-1 active:shadow-none hidden sm:block"
+                    >
+                      APPLY NOW
+                    </button>
+                    <button 
+                      onClick={() => setSelectedJobForDetails(null)}
+                      className="p-3 border-2 border-black/10 hover:border-black hover:bg-black hover:text-white transition-all"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="square">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* SCROLLABLE CONTENT */}
+                <div 
+                  className="flex-1 p-8 md:p-10 space-y-10 overflow-y-auto custom-scrollbar selection:bg-black selection:text-white"
+                  data-lenis-prevent
+                >
+                  <div className="flex flex-wrap gap-2">
+                    {selectedJobForDetails.tags?.map(tag => (
+                      <span key={tag} className="font-grotesk text-[9px] font-black uppercase tracking-[0.2em] border-2 border-black/10 px-3 py-1 bg-black/5 text-black">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="space-y-12">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-4">
+                        <label className="font-grotesk text-[11px] font-black uppercase tracking-[0.4em] text-black">
+                          TECHNICAL SPECIFICATIONS
+                        </label>
+                        <div className="h-[2px] flex-1 bg-black/5" />
+                      </div>
+                      <div className="font-inter text-[14px] md:text-[16px] font-bold text-black/80 leading-[1.7] whitespace-pre-wrap tracking-normal bg-white border-l-[6px] border-black p-8 md:p-10 shadow-sm">
+                        {selectedJobForDetails.desc || "Full technical signatures and agent-led validation required for this position."}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* MOBILE ONLY APPLY BUTTON */}
+                  <div className="sm:hidden pt-4">
+                    <button
+                      onClick={() => {
+                        setSelectedRoleForApply(selectedJobForDetails);
+                        setActivePage("apply");
+                        setSelectedJobForDetails(null);
+                      }}
+                      className="w-full bg-black text-white py-5 font-grotesk text-[12px] font-black uppercase tracking-[0.3em]"
+                    >
+                      APPLY NOW
+                    </button>
+                  </div>
+                </div>
+
+                {/* MODAL FOOTER STICKY (INTERNAL) */}
+                <div className="bg-[#f0f0f0] border-t-[3px] border-black px-10 py-6 flex justify-between items-center shrink-0">
+                  <div className="font-grotesk text-[9px] font-black uppercase tracking-[0.2em] opacity-40">
+                    REF: {selectedJobForDetails.id} // HEUREKA_FHN_PROTECTED
+                  </div>
+                  <button
+                    onClick={() => setSelectedJobForDetails(null)}
+                    className="font-grotesk text-[10px] font-black uppercase tracking-[0.3em] hover:underline"
+                  >
+                    [ BACK TO LIST ]
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       <footer className="max-w-[1280px] mx-auto px-6 md:px-12 py-12 border-t border-[#1c1c1c]/10 text-center md:text-left">
         <div className="font-grotesk text-xs tracking-widest uppercase font-black text-[#1c1c1c]">

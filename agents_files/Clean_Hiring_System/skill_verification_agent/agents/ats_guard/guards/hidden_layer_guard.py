@@ -16,13 +16,13 @@ def run(pdf_path: str, extracted_text: str):
                     text = span.get("text", "")
                     size = span.get("size", 10)
                     total_chars += len(text)
-                    if size < 6:
+                    if size < 2:
                         tiny_chars += len(text)
     doc.close()
 
     ratio = tiny_chars / total_chars if total_chars else 0
 
-    if ratio > 0.05:
+    if ratio > 0.15:
         return {
             "flag": True,
             "type": "hidden_layer",

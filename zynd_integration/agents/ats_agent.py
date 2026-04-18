@@ -77,15 +77,15 @@ def attach_handler(agent: ZyndAIAgent) -> None:
                 status = guard_result.get("security_status", "OK")
                 action = "BLACKLIST" if status == "REJECTED" else ("NEEDS_REVIEW" if status == "REVIEW" else status)
                 
-                extraction_result = {}
-                if status != "REJECTED":
-                    # Step 2: Run Evidence Extraction only if guard passed/review
-                    ats_impl = ATSEvidenceAgent(llm=None)
-                    extraction_result = ats_impl.extract_evidence(
-                        pdf_path=resume_path,
-                        resume_text=resume_text,
-                        evaluation_id=str(application_id) if application_id else None
-                    )
+                # Step 2: Run Evidence Extraction
+                # In Demo/Local mode, we always try to extract skills even if flagged, 
+                # so the user can see what the AI found (transparency).
+                ats_impl = ATSEvidenceAgent(llm=None)
+                extraction_result = ats_impl.extract_evidence(
+                    pdf_path=resume_path,
+                    resume_text=resume_text,
+                    evaluation_id=str(application_id) if application_id else None
+                )
                 
                 # Merge Results
                 flags_list = guard_result.get("flags") or []

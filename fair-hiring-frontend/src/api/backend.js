@@ -1,6 +1,9 @@
-const BASE = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:8012' 
-  : 'https://fhh-backend-bb62.onrender.com'); 
+// Dynamically use the current hostname for local dev, allowing access from network devices (e.g. phones on 172.x.x.x)
+let envBase = import.meta.env.VITE_BACKEND_URL;
+if (envBase && envBase.includes('localhost') && window.location.hostname !== 'localhost') {
+  envBase = `http://${window.location.hostname}:8012`;
+}
+const BASE = envBase || `http://${window.location.hostname}:8012`;
 console.log("Using Backend URL:", BASE);
 
 // ── Auth token management ─────────────────────────────────────────────────────

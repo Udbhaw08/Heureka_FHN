@@ -35,6 +35,8 @@ const Auth0ProviderWithNavigate = ({ children }) => {
       clientId={AUTH0_CLIENT_ID}
       authorizationParams={{
         redirect_uri: window.location.origin,
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE || "https://fair-hiring-api",
+        scope: "openid profile email",
       }}
       onRedirectCallback={onRedirectCallback}
       cacheLocation="localstorage"

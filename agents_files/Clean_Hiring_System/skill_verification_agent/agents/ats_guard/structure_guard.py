@@ -36,7 +36,7 @@ def check_structure(pdf_path: str) -> list:
                         text = span.get("text", "")
 
                         # Tiny font attack
-                        if size < 6 and len(text.strip()) > 0:
+                        if size < 2 and len(text.strip()) > 0:
                             flags.append({
                                 "type": "hidden_text",
                                 "severity": "high",

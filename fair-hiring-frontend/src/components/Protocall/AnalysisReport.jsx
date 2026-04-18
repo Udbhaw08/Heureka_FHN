@@ -1,8 +1,9 @@
 import React from 'react';
 import { Icons } from './constants';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import { CourseRecommendations } from './CourseRecommendations';
 
-export const AnalysisReport = ({ analysis, onReset }) => {
+export const AnalysisReport = ({ analysis, config, onReset }) => {
     const radarData = [
         { subject: 'Clarity', A: analysis.clarity || 0, fullMark: 100 },
         { subject: 'Confidence', A: analysis.confidence || 0, fullMark: 100 },
@@ -172,6 +173,10 @@ export const AnalysisReport = ({ analysis, onReset }) => {
                     })}
                 </div>
             </div>
+
+            {config?.role && (
+                <CourseRecommendations role={config.role} />
+            )}
 
             <div className="py-16 text-center">
                 <p className="text-[#1c1c1c]/20 text-[10px] font-black uppercase tracking-[0.8em]">SYSTEM_VERSION_1.0 // FAIR_HIRING_NETWORK</p>

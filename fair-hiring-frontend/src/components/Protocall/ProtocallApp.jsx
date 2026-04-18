@@ -234,6 +234,7 @@ const FairHiringInterview = ({ onExit }) => {
                 return state.analysis ? (
                     <AnalysisReport
                         analysis={state.analysis}
+                        config={state.config}
                         onReset={() => setState(prev => ({ ...prev, status: InterviewStatus.IDLE, analysis: null, config: null }))}
                     />
                 ) : null;
