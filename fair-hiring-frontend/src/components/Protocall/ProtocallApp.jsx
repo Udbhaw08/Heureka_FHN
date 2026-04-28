@@ -111,11 +111,16 @@ const FairHiringInterview = ({ onExit }) => {
         }
     };
 
+    const isStandalone = import.meta.env.VITE_STANDALONE_PROTOCOL === 'true';
+
     const handleExit = () => {
-        if (onExit) {
+        if (onExit && !isStandalone) {
             onExit();
-        } else {
+        } else if (!isStandalone) {
             navigate('/candidate');
+        } else {
+            // In standalone, just return to IDLE
+            setState(prev => ({ ...prev, status: InterviewStatus.IDLE, analysis: null, config: null }));
         }
     };
 
@@ -126,6 +131,8 @@ const FairHiringInterview = ({ onExit }) => {
             if (confirm("Are you sure you want to leave the interview? Progress will be lost.")) {
                 setState(prev => ({ ...prev, status: InterviewStatus.SETUP }));
             }
+        } else if (state.status === InterviewStatus.COMPLETED) {
+            setState(prev => ({ ...prev, status: InterviewStatus.IDLE, analysis: null, config: null }));
         } else {
             handleExit();
         }

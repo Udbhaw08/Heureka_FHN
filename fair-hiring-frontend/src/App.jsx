@@ -89,6 +89,8 @@ function App() {
 
     const cursorRef = useRef(null);
 
+    const isStandaloneProtocol = import.meta.env.VITE_STANDALONE_PROTOCOL === 'true';
+
     useEffect(() => {
         // Initialize Lenis smooth scroll
         const lenisInstance = new Lenis({
@@ -187,6 +189,23 @@ function App() {
         }
         setIsMenuOpen(false);
     };
+
+    // STANDALONE PROTOCOL MODE: Bypass everything else
+    if (isStandaloneProtocol) {
+        return (
+            <div className="app bg-[#e5e5e5]">
+                {/* Custom cursor for consistent branding */}
+                <div ref={cursorRef} className="cursor-dot"></div>
+                <Suspense fallback={<div className="fixed inset-0 bg-[#1c1c1c] z-[100] flex items-center justify-center font-grotesk text-white text-xs uppercase tracking-widest">Protocol Initializing...</div>}>
+                    <ErrorBoundary>
+                        <Routes>
+                            <Route path="*" element={<ProtocallApp onExit={() => {}} />} />
+                        </Routes>
+                    </ErrorBoundary>
+                </Suspense>
+            </div>
+        );
+    }
 
     return (
         <div className="app relative bg-[#e5e5e5]">
@@ -380,6 +399,19 @@ function App() {
                                     <ProtocallApp
                                         onExit={() => {
                                             navigate("/candidate");
+                                        }}
+                                    />
+                                </div>
+                            }
+                        />
+
+                        <Route
+                            path="/protocol"
+                            element={
+                                <div className="overlay-wrapper" data-lenis-prevent>
+                                    <ProtocallApp
+                                        onExit={() => {
+                                            navigate("/");
                                         }}
                                     />
                                 </div>

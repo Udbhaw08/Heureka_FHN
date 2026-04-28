@@ -264,7 +264,7 @@ class PipelineOrchestrator:
                 
                 start_time = datetime.now()
                 try:
-                    ats_result = await self.call_agent("ATS", "/webhook/sync", ats_input)
+                    ats_result = await self.call_agent("ATS", "/run", ats_input)
                     duration = (datetime.now() - start_time).total_seconds() * 1000
 
                     # agent_client wraps response: { "success": bool, "data": {...}, "status_code": int }
