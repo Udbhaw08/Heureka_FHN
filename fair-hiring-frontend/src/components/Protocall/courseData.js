@@ -139,8 +139,66 @@ export const COURSE_DATA = {
 
 export const SUPPORTED_ROLES = Object.keys(COURSE_DATA);
 
-export function getCoursesForRole(role) {
-  if (COURSE_DATA[role]) return COURSE_DATA[role];
-  const key = SUPPORTED_ROLES.find(k => k.toLowerCase() === role?.toLowerCase());
-  return key ? COURSE_DATA[key] : null;
+const ROLE_ALIASES = {
+  'Frontend Engineer': ['frontend', 'fe', 'ui developer', 'web developer', 'react'],
+  'Backend Engineer': ['backend', 'be', 'server', 'node', 'api'],
+  'AI Engineer': ['ai', 'artificial intelligence', 'machine learning', 'ml', 'data science', 'deep learning'],
+  'ML Ops': ['mlops', 'ml','ml operations', 'machine learning ops', 'model ops']
+};
+
+export function getCoursesForRole(roleQuery) {
+  if (!roleQuery) return null;
+  
+  const query = roleQuery.toLowerCase().trim();
+  
+  // 1. Check for exact match in keys
+  const exactMatch = SUPPORTED_ROLES.find(role => role.toLowerCase() === query);
+  if (exactMatch) return COURSE_DATA[exactMatch];
+
+  // 2. Check for alias match
+  for (const [role, aliases] of Object.entries(ROLE_ALIASES)) {
+    if (aliases.some(alias => alias.toLowerCase() === query)) {
+      return COURSE_DATA[role];
+    }
+  }
+
+  // 3. Check for substring match in keys or aliases
+  const matchedRoles = new Set();
+  
+  const queryRegex = new RegExp(`\\b${query}\\b`, 'i');
+
+  SUPPORTED_ROLES.forEach(role => {
+    const roleLower = role.toLowerCase();
+    if (queryRegex.test(roleLower) || (query.length >= 3 && roleLower.includes(query)) || query.includes(roleLower)) {
+      matchedRoles.add(role);
+    }
+  });
+
+  Object.entries(ROLE_ALIASES).forEach(([role, aliases]) => {
+    if (aliases.some(alias => {
+      const aliasLower = alias.toLowerCase();
+      return queryRegex.test(aliasLower) || (query.length >= 3 && aliasLower.includes(query)) || query.includes(aliasLower);
+    })) {
+      matchedRoles.add(role);
+    }
+  });
+
+  if (matchedRoles.size > 0) {
+    // Merge courses from all matched roles, avoiding duplicates if any (though IDs are unique)
+    const allCourses = [];
+    const seenIds = new Set();
+    
+    matchedRoles.forEach(role => {
+      COURSE_DATA[role].forEach(course => {
+        if (!seenIds.has(course.id)) {
+          allCourses.push(course);
+          seenIds.add(course.id);
+        }
+      });
+    });
+    
+    return allCourses;
+  }
+
+  return null;
 }
